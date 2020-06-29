@@ -1,7 +1,8 @@
 # postgresql
 
-Contenedor Docker para el uso de la base de datos **Postgresql**
+Este proyecto representa una estructura de recursos utilizados para el uso de **Postgresql** con **Docker**
 
+* **docker-compose.yaml + Directorio /postgresql-11:** representa una instalación independiente, básica, y customizada (a nivel de datos) de  **Postgresql** con **Docker**
 
 
 
@@ -55,7 +56,7 @@ services:
          - 5432:5432
 ```
 
-En este fichero se establece el constructor de la imágen que se utilizará, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
+En este fichero se establece el constructor de la imagen que se utilizará, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
 
 Configuración del fichero "Dockerfile"
 
@@ -82,15 +83,15 @@ docker-compose up --build
 docker-compose up --build -d
 ```
 
-3. Comprobar que la imágen ha sido creada
+3. Comprobar que la imagen ha sido creada
 
-Verificar que parece como imágen Docker el nombre "postgresql_test"
+Verificar que parece como imagen Docker el nombre "cutom-postgres-11"
 
 4. Comprobar que la aplicación ha sido desplegada correctamente
 
 Verificar mediante un cliente de base datos que la conexión se puede realizar
 
-![Comprobación Conexión de Cliente de Base de datos](https://github.com/vjmadrid/enmilocalfunciona-schemaspy/blob/master/images/postgresql-client-test.png)
+Comprobación Conexión de Cliente de Base de datos
 
 
 

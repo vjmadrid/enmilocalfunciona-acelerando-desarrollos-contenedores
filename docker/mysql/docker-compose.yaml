@@ -2,8 +2,9 @@ version: '3.7'
 
 services:
 
-   test:
+   cutom-mysql-5.7:
       build: ./mysql-5.7
+      container_name: cutom-mysql-5.7
       environment:
          MYSQL_ROOT_PASSWORD: root
          MYSQL_DATABASE: acme

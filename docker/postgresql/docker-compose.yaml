@@ -2,8 +2,9 @@ version: '3.7'
 
 services:
 
-   test:
+   cutom-postgres-11:
       build: ./postgres-11
+      container_name: cutom-postgres-11
       environment:
          POSTGRES_USER: test
          POSTGRES_PASSWORD: test

@@ -1,6 +1,8 @@
 # mysql
 
-Contenedor Docker para el uso de la base de datos  **MySQL**
+Este proyecto representa una estructura de recursos utilizados para el uso de **MySQL** con **Docker**
+
+* **docker-compose.yaml + Directorio /mysql-5.7:** representa una instalación independiente, básica, y customizada (a nivel de datos) de  **MySQL** con **Docker**
 
 
 
@@ -59,7 +61,7 @@ services:
          - 3306:3306
 ```
 
-En este fichero se establece el constructor de la imágen que se utilizará, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
+En este fichero se establece el constructor de la imsgen que se utilizará, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
 
 Configuración del fichero "Dockerfile"
 
@@ -74,7 +76,7 @@ En este fichero se establece la versión a utilizar y se le indicará los ficher
 Pasos a seguir
 
 
-1. Localizar el directorio principal del proyecto : <PROJECT_PATH> (infrastructure-db/docker/mysql)
+1. Localizar el directorio principal del proyecto : <PROJECT_PATH> (/docker/mysql)
 
 2. Ejecutar el siguiente comando
 
@@ -88,7 +90,7 @@ docker-compose up --build -d
 
 3. Comprobar que la imagen ha sido creada
 
-Verificar que parece como imagen Docker el nombre "mysql_test"
+Verificar que parece como imagen Docker el nombre "mycutom-mysql-5.7"
 
 4. Comprobar que la aplicación ha sido desplegada correctamente
 
