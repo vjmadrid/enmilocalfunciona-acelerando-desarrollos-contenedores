@@ -1,6 +1,8 @@
-# tomcat standalone 8.5
+# apache-tomcat
 
-Este proyecto representa una instalación independiente y básica de  **Tomcat** con **Docker**
+Este proyecto representa una estructura de recursos utilizados para el uso de  **Tomcat** con **Docker**
+
+* **docker-compose.yaml + Directorio /tomcat-8.5:** representa una instalación independiente, básica, y customizada (a nivel de usuario y uso de UI) de  **Tomcat** con **Docker**
 
 
 
