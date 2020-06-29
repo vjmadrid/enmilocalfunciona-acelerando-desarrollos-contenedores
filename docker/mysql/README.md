@@ -1,0 +1,135 @@
+# mysql
+
+Contenedor Docker para el uso de la base de datos  **MySQL**
+
+
+
+
+
+## Stack Tecnológico
+
+* [Docker](https://www.docker.com/) - Technología de Contenedores/Containers
+* [Docker Hub](https://hub.docker.com/) - Repositorio de Docker Publico
+* [MySQL](https://www.mysql.com/) - Base de Datos relacional (Version 5.7)
+
+Dependencias con Proyectos de Arquitectura
+
+N/A
+
+Dependencias con Terceros
+
+N/A
+
+
+
+
+
+## Prerrequisitos
+
+Define que elementos son necesarios para instalar el software
+
+* Docker instalado (19+)
+
+
+
+
+
+## Instalación
+
+### Docker Compose
+
+Configuración del fichero "docker-compose.yaml"
+
+```bash
+version: '3.7'
+
+services:
+
+   test:
+      build: ./mysql-5.7
+      environment:
+         MYSQL_ROOT_PASSWORD: root
+         MYSQL_DATABASE: acme
+         MYSQL_USER: test
+         MYSQL_PASSWORD: test
+      volumes:
+         - ./mysql-5.7/config/my.cnf:/etc/mysql/conf.d/my.cnf
+         - ./mysql-5.7/sql-scripts:/docker-entrypoint-initdb.d
+      ports:
+         - 3306:3306
+```
+
+En este fichero se establece el constructor de la imágen que se utilizará, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
+
+Configuración del fichero "Dockerfile"
+
+```bash
+FROM mysql:5.7
+
+COPY ./sql-scripts/*.sql /docker-entrypoint-initdb.d/
+```
+
+En este fichero se establece la versión a utilizar y se le indicará los ficheros de carga de datos para disponer de datos iniciales
+
+Pasos a seguir
+
+
+1. Localizar el directorio principal del proyecto : <PROJECT_PATH> (infrastructure-db/docker/mysql)
+
+2. Ejecutar el siguiente comando
+
+```bash
+docker-compose up --build
+
+ó
+
+docker-compose up --build -d
+```
+
+3. Comprobar que la imagen ha sido creada
+
+Verificar que parece como imagen Docker el nombre "mysql_test"
+
+4. Comprobar que la aplicación ha sido desplegada correctamente
+
+Verificar mediante un cliente de base datos que la conexión se puede realizar
+
+
+
+
+
+## Pruebas
+
+N/A
+
+
+
+
+
+## Despliegue
+
+N/A
+
+
+
+
+
+## Uso
+
+N/A
+
+
+
+
+
+## Versionado
+
+**Nota :** [SemVer](http://semver.org/) es usado para el versionado.
+
+
+
+
+
+## Autores
+
+* **Víctor Madrid**

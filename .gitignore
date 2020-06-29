@@ -1,0 +1,46 @@
+### Java ###
+
+# Compiled class file
+*.class
+
+# Log file
+*.log
+
+# Package files
+*.jar
+*.war
+*.nar
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+### Eclipse ###
+.metadata/
+.settings/
+.project
+.classpath
+.loadpath
+.recommenders
+.sts4-cache/
+.factorypath
+
+target/
+bin/
+tmp/
+
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+
+output/
+
+zk-single-kafka-single/
+zk-single-kafka-multiple/
+zk-multiple-kafka-single/
+zk-multiple-kafka-multiple/
+
+zk-single-kafka-multiple-4/
+

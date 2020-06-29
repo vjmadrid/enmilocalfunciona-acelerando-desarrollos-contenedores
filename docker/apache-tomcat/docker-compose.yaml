@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+
+   custom-tomcat-8.5:
+      build: ./tomcat-8.5
+      container_name: custom-tomcat-8.5
+      volumes:
+         - ./example/acme.war:/usr/local/tomcat/webapps/acme.war
+      ports:
+         - "8080:8080"
