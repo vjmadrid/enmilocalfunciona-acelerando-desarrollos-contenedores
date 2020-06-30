@@ -24,6 +24,8 @@ N/A
 
 
 
+
+
 ## Prerrequisitos
 
 Define que elementos son necesarios para instalar el software
@@ -35,20 +37,17 @@ Define que elementos son necesarios para instalar el software
 
 
 
+## Uso
+
+
 Se encuentra organizado en áreas :
 
-* containers
+* docker
 
 
-
-
-
-## containers
+### docker
 
 Directorio encargado de almacenar todos aquellos recursos utilizados
-
-
-
 
 
 

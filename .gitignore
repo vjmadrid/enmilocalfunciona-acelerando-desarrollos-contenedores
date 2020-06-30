@@ -37,10 +37,6 @@ local.properties
 
 output/
 
-zk-single-kafka-single/
-zk-single-kafka-multiple/
-zk-multiple-kafka-single/
-zk-multiple-kafka-multiple/
-
-zk-single-kafka-multiple-4/
+custom-mysql-5.7/
+custom-postgres-11/
 

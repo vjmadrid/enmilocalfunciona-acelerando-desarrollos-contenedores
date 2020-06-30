@@ -2,16 +2,16 @@ version: '3.7'
 
 services:
 
-   cutom-mysql-5.7:
+   custom-mysql-5.7:
       build: ./mysql-5.7
-      container_name: cutom-mysql-5.7
+      container_name: custom-mysql-5.7
       environment:
          MYSQL_ROOT_PASSWORD: root
          MYSQL_DATABASE: acme
          MYSQL_USER: test
          MYSQL_PASSWORD: test
       volumes:
-         - ./mysql-5.7/config/my.cnf:/etc/mysql/conf.d/my.cnf
+         - ./custom-mysql-5.7/config/my.cnf:/etc/mysql/conf.d/my.cnf
          - ./mysql-5.7/sql-scripts:/docker-entrypoint-initdb.d
       ports:
          - 3306:3306
