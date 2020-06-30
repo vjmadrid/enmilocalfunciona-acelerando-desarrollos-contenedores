@@ -46,12 +46,15 @@ version: '3.7'
 
 services:
 
-   test:
+   custom-postgres-11:
       build: ./postgres-11
+      container_name: custom-postgres-11
       environment:
          POSTGRES_USER: test
          POSTGRES_PASSWORD: test
          POSTGRES_DB: acme
+      #volumes:
+      #   - ./custom-postgres-11/data/:/var/lib/postgresql/data/  
       ports:
          - 5432:5432
 ```
