@@ -1,0 +1,3 @@
+INSERT INTO Company (CompanyId, CompanyName, CreatedBy, CreatedAt, ModifiedBy, ModifiedAt) VALUES (1, 'CISTEC TECHNOLOGY', '0', '2019-11-07T17:43:22.590', NULL, NULL);
+INSERT INTO Company (CompanyId, CompanyName, CreatedBy, CreatedAt, ModifiedBy, ModifiedAt) VALUES (2, 'EXTERNO', '0', '2019-11-07T17:43:22.590', NULL, NULL);
+INSERT INTO Company (CompanyId, CompanyName, CreatedBy, CreatedAt, ModifiedBy, ModifiedAt) VALUES (3, 'ACME', '0', '2019-11-07T18:30:00.590', NULL, NULL);

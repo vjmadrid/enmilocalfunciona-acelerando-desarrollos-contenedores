@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+
+   dive-0.9:
+      build: ./dive-0.9
+      container_name: dive-0.9
+      environment:
+         DOCKER_API_VERSION: 1.40
+      volumes:
+         - ./dive-0.9/docker.sock:/var/run/docker.sock
+

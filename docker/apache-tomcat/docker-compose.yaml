@@ -8,4 +8,4 @@ services:
       volumes:
          - ./example/acme.war:/usr/local/tomcat/webapps/acme.war
       ports:
-         - "8080:8080"
+         - "8090:8080"

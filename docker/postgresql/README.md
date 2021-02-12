@@ -88,7 +88,7 @@ docker-compose up --build -d
 
 3. Comprobar que la imagen ha sido creada
 
-Verificar que parece como imagen Docker el nombre "cutom-postgres-11"
+Verificar que parece como imagen Docker el nombre "custom-postgres-11"
 
 4. Comprobar que la aplicación ha sido desplegada correctamente
 
