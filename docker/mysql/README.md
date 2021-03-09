@@ -10,7 +10,7 @@ Este proyecto representa una estructura de recursos utilizados para el uso de **
 
 ## Stack Tecnológico
 
-* [Docker](https://www.docker.com/) - Technología de Contenedores/Containers
+* [Docker](https://www.docker.com/) - Tecnología de Contenedores/Containers
 * [Docker Hub](https://hub.docker.com/) - Repositorio de Docker Publico
 * [MySQL](https://www.mysql.com/) - Base de Datos relacional (Version 5.7)
 

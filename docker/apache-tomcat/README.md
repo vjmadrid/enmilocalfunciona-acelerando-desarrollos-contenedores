@@ -10,9 +10,9 @@ Este proyecto representa una estructura de recursos utilizados para el uso de  *
 
 ## Stack Tecnológico
 
-* [Docker](https://www.docker.com/) - Technología de Contenedores/Containers
-* [Docker Hub](https://hub.docker.com/) - Repositorio de Docker Publico
-* [Tomcat 8.5](http://tomcat.apache.org) : Contenedor de Servlets
+* [Docker](https://www.docker.com/) - Tecnología de Contenedores/Containers
+* [Docker Hub](https://hub.docker.com/) - Repositorio de Docker Público
+* [Tomcat 8.5](http://tomcat.apache.org) - Contenedor de Servlets
 
 Dependencias con Proyectos de Arquitectura
 
@@ -80,7 +80,7 @@ EXPOSE 8080
 CMD ["catalina.sh","run"]
 ```
 
-En este fichero se establece la versión a utilizar de tomcant, contiene una serie de instrucciones que pueden facilitar la preparación de la imagen y el despliegue inicial, incorpora una capa de usuarios y roles establecida previamente, además de un fichero donde se habilita el uso de la interfaz UI
+En este fichero se establece la versión a utilizar de Tomcat, contiene una serie de instrucciones que pueden facilitar la preparación de la imagen y el despliegue inicial, incorpora una capa de usuarios y roles establecida previamente, además de un fichero donde se habilita el uso de la interfaz UI
 
 Pasos a seguir
 
@@ -103,9 +103,6 @@ Verificar que parece como imagen Docker el nombre "mysql_test"
 
 4. Comprobar que la aplicación ha sido desplegada correctamente
 
-Verificar mediante un cliente de base datos que la conexión se puede realizar
-
-Comprobación Conexión de Cliente de Base de datos]
 
 
 
