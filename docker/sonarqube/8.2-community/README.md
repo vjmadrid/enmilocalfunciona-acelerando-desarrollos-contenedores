@@ -4,7 +4,7 @@ Este proyecto representa una estructura de recursos utilizados para el uso de  *
 
 * **docker-compose.yaml + sonar.properties :** representa una instalación independiente, básica, y customizada (a nivel de propiedades) de **SonarQube** con **Docker**
 
-Incluye el uso de Base de datos **Postgres**
+Incluye el uso de Base de datos **Postgres** (para conseguir persistencia)
 
 
 
@@ -128,7 +128,7 @@ Verificar que parece como imagen Docker el nombre "82-community_sonarqube"
 
 ### Docker Standalone
 
-Se puede ejecutar de forma individual con los comandos de docker sobre el fichero "Dockerfile"
+N/A
 
 
 
