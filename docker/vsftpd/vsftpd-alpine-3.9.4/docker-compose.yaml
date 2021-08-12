@@ -1,0 +1,36 @@
+version: '3.7'
+
+services:
+  
+  vsftpd:
+    build: 
+      context: ./vsftpd-alpine-3.9.4
+      dockerfile: Dockerfile
+      args:
+        USER_ID: 1000
+        GROUP_ID: 1000
+    environment:
+        # FTP_MODE : ftp, ftps, ftps_implicit or ftps_tls
+        FTP_MODE: 'ftp'
+        FTP_USER: 'user'
+        FTP_PASS: 'user'
+        # USER_MODE : basic or virtual
+        USER_MODE: 'basic'
+        ANONYMOUS_ACCESS: '*Boolean*'
+        PASV_ENABLE: 'YES'
+        PASV_ADDRESS: ''
+        PASV_ADDRESS_INTERFACE: 'eth0'
+        PASV_ADDR_RESOLVE: 'NO'
+        PASV_MIN_PORT: '21100'
+        PASV_MAX_PORT: '21110'
+        LOG_STDOUT: 'false'
+        #CUSTOM_PASSIVE_ADDRESS: 'localhost'
+    volumes:
+      - ./vsftpd-alpine-3.9.4-vol/home:/home/vsftpd
+      - ./vsftpd-alpine-3.9.4-vol/logs:/var/log/vsftpd
+    ports:
+      - "0.0.0.0:20:20"
+      - "0.0.0.0:21:21"
+      - "21100-21110:21100-21110"
+
+
