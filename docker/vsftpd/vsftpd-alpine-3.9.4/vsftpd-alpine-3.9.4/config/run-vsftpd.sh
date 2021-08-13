@@ -1,5 +1,14 @@
 #!/bin/bash
 
+set -e
+
+[[ "${DEBUG}" == "true" ]] && set -x
+
+
+
+# *****************
+#  CONFIG FTP MODE
+# *****************
 
 echo
 echo "*** CONFIG FTP MODE ***"
@@ -14,7 +23,7 @@ else
     exit 1
 fi
 
-if [[ "$FTP_MODE" == "ftp" ]] && [ ! -e /etc/vsftpd/private/vsftpd.pem ] 
+if [[ "$FTP_MODE" == "ftps" ]] && [ ! -e /etc/vsftpd/private/vsftpd.pem ] 
 then
     echo "* Generating self-signed certificate"
     mkdir -p /etc/vsftpd/private
@@ -34,6 +43,10 @@ fi
 echo "[EVN] FTP_MODE=${FTP_MODE}"
 
 
+
+# *****************************
+#  CONFIG FTP USER / PASSWORD
+# *****************************
 
 echo
 echo "*** CONFIG USER / PASSWORD ***"
@@ -59,9 +72,29 @@ if [ "$FTP_PASS" = "*Random*" ]; then
 	echo "* Define password random -> *Random*"
 fi
 
+# Password hash for the default user (Default : "")
+FTP_PASS_HASH=${FTP_PASS_HASH:-}
+
+if [ "$FTP_PASS_HASH" = "*Hash*" ]; then
+	FTP_PASS_HASH="$(echo "${FTP_PASS}" | mkpasswd -s -m sha-512)"
+	echo "* Define password hash -> *Hash*"
+    FTP_PASS="${FTP_PASS_HASH}"
+fi
+
+if [ -z "$FTP_PASS_HASH" ]; then
+    echo "* Use password"
+else
+    echo "* Use password hash"
+    FTP_PASS="${FTP_PASS_HASH}"
+fi
+
 echo "[EVN] FTP_PASS=${FTP_PASS}"
 
 
+
+# *****************************
+#  CONFIG USER MODE
+# *****************************
 
 echo
 echo "*** CONFIG USER MODE ***"
@@ -79,6 +112,10 @@ fi
 echo "[EVN] USER_MODE=${USER_MODE}"
 
 
+
+# *****************************
+#  CONFIG PASSIVE MODE
+# *****************************
 
 echo
 echo "*** CONFIG PASSIVE MODE ***"
@@ -109,12 +146,6 @@ echo "*** CONFIG LOG STDOUT ***"
 
 # Enable/disable the log stdout  (Default : false)
 LOG_STDOUT=${LOG_STDOUT:-false}
-
-if [ "$LOG_STDOUT" == "false" ]; then
-	echo "* Logging to STDOUT Disabled"
-else
-	echo "* Logging to STDOUT Enabled"
-fi
 
 echo "[EVN] LOG_STDOUT=${LOG_STDOUT}"
 
@@ -166,7 +197,7 @@ else
 
     # Add new user
     echo -e "${FTP_USER}\n${FTP_PASS}" > /etc/vsftpd/virtual_users.txt
-    echo "[CONF] Updated /etc/vsftpd/virtual_users.txt with user ${FTP_USER}"
+    echo "[CONF] Updated /etc/vsftpd/virtual_users.txt with user :: [${FTP_USER}]"
 
     # Update vsftpd database with the new user
     /usr/bin/db_load -T -t hash -f /etc/vsftpd/virtual_users.txt /etc/vsftpd/virtual_users.db
@@ -200,18 +231,30 @@ echo "[CONF] Update CONF_FILE_VSFTPD with new properties according to env variab
 echo "" >> $CONF_FILE_VSFTPD
 echo "# *** Conf run-vsftpd.sh script ***" >> $CONF_FILE_VSFTPD
 
-# Log Stdout
-#if [ "$LOG_STDOUT" == "true" ]; then
-#	echo "# Log Stdout" >> $CONF_FILE_VSFTPD
-#fi
 
+# **************
 # Anonymous mode
+# **************
 echo " * Add Anonymous Mode"
 
 echo "# Anonymous Mode" >> $CONF_FILE_VSFTPD
 echo "anonymous_enable=NO" >> $CONF_FILE_VSFTPD
 
+
+# ************
+# Active mode
+# ************
+echo " * Add Active Mode"
+
+echo "# Active Mode" >> $CONF_FILE_VSFTPD
+echo "port_enable=YES" >> $CONF_FILE_VSFTPD
+echo "connect_from_port_20=YES" >> $CONF_FILE_VSFTPD
+echo "ftp_data_port=20" >> $CONF_FILE_VSFTPD
+
+
+# ************
 # Passive mode
+# ************
 if [ "$PASV_ENABLE" == "YES" ]; then
     echo " * Add Passive Mode"
 
@@ -223,8 +266,67 @@ if [ "$PASV_ENABLE" == "YES" ]; then
     echo "pasv_min_port=$PASV_MIN_PORT" >> $CONF_FILE_VSFTPD
 fi
 
+
+# *****************
+# Virtual user mode
+# *****************
+if [ "$USER_MODE" = "virtual" ]; then
+    echo " * Add Virtual User Mode"
+
+    echo "# Virtual User Mode" >> $CONF_FILE_VSFTPD
+    echo "pam_service_name=vsftpd_virtual" >> $CONF_FILE_VSFTPD
+    #echo "virtual_use_local_privs=YES" >> $CONF_FILE_VSFTPD
+fi
+
+
+# *******
+# Logging
+# *******
+echo " * Add Logging"
+
+echo "# Logging" >> $CONF_FILE_VSFTPD
+echo "log_ftp_protocol=YES" >> $CONF_FILE_VSFTPD
+# The target log file can be vsftpd_log_file or xferlog_file.
+# This depends on setting xferlog_std_format parameter
+echo "xferlog_enable=YES" >> $CONF_FILE_VSFTPD
+# If you want, you can have your log file in standard ftpd xferlog format.
+# Note that the default log file location is /var/log/xferlog in this case.
+echo "xferlog_std_format=YES" >> $CONF_FILE_VSFTPD
+# The name of log file when xferlog_enable=YES and xferlog_std_format=YES
+# WARNING - changing this filename affects /etc/logrotate.d/vsftpd.log
+echo "xferlog_file=/var/log/vsftpd/vsftpd.log" >> $CONF_FILE_VSFTPD
+# #echo "xferlog_file=/dev/stdout" >> $CONF_FILE_VSFTPD
+
+echo "syslog_enable=NO" >> $CONF_FILE_VSFTPD
+echo "dual_log_enable=YES" >> $CONF_FILE_VSFTPD
+
+
+
+echo
+echo "*** LOG STDOUT ***"
+if [ "$LOG_STDOUT" == "false" ]; then
+	echo "* Logging to STDOUT Disabled"
+else
+	echo "* Logging to STDOUT Enabled"
+
+    
+
+    #export LOG_FILE=`grep xferlog_file= $CONF_FILE_VSFTPD|cut -d= -f2`
+
+    #echo "[EVN] LOG_FILE=${LOG_FILE}"
+
+    #mkdir -p /var/log/vsftpd
+	#touch ${LOG_FILE}
+
+    #tail -f ${LOG_FILE} | /dev/stdout &
+
+    #/usr/bin/ln -sf /dev/stdout $LOG_FILE
+    #echo "[EVN] LOG_FILE=${LOG_FILE}"
+fi
+
+
 # Show CONF_FILE_VSFTPD result
-# cat $CONF_FILE_VSFTPD
+#cat $CONF_FILE_VSFTPD
 
 # Run the vsftpd server
 echo

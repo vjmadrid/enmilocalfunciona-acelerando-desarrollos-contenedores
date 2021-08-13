@@ -18,8 +18,6 @@ COPY ./config/vsftpd-ftps_implicit.conf /etc/vsftpd/vsftpd-ftps_implicit.conf
 COPY ./config/vsftpd-ftps_tls.conf /etc/vsftpd/vsftpd-ftps_tls.conf
 
 COPY ./config/vsftpd_virtual /etc/pam.d/
-#COPY ./config/vsftpd.conf /etc/vsftpd/
-#COPY ./config/vsftpd_virtual /etc/pam.d/
 
 COPY ./config/run-vsftpd.sh /usr/sbin/
 

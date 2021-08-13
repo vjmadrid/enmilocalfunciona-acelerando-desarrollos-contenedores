@@ -10,10 +10,12 @@ services:
         USER_ID: 1000
         GROUP_ID: 1000
     environment:
+        DEBUG: 'false'
         # FTP_MODE use : ftp, ftps, ftps_implicit or ftps_tls
-        FTP_MODE: 'ftp'
+        FTP_MODE: 'ftps'
         FTP_USER: 'user'
         FTP_PASS: 'user'
+        FTP_PASS_HASH: '*Hash*'
         # USER_MODE use : basic or virtual
         USER_MODE: 'basic'
         ANONYMOUS_ACCESS: '*Boolean*'
@@ -23,11 +25,13 @@ services:
         PASV_ADDR_RESOLVE: 'NO'
         PASV_MIN_PORT: '21100'
         PASV_MAX_PORT: '21110'
-        LOG_STDOUT: 'false'
+        LOG_STDOUT: 'true'
         #CUSTOM_PASSIVE_ADDRESS: 'localhost'
     volumes:
       - ./vsftpd-alpine-3.9.4-vol/home:/home/vsftpd
-      - ./vsftpd-alpine-3.9.4-vol/logs:/var/log/vsftpd
+      - ./vsftpd-alpine-3.9.4-vol/guest:/guest/vsftpd
+      - ./vsftpd-alpine-3.9.4-vol/logs:/var/log/
+      - ./vsftpd-alpine-3.9.4-vol/pem-fir:/etc/vsftpd/private
     ports:
       - "0.0.0.0:20:20"
       - "0.0.0.0:21:21"
