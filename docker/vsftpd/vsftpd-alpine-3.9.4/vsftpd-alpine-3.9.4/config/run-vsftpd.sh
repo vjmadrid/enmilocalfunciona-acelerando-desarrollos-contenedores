@@ -184,23 +184,23 @@ echo "" >> $VSFTPD_CONF
 echo "# The following config lines are added by the run-vsftpd.sh script " >> $VSFTPD_CONF
 
 # Log Stdout
-if [ "$LOG_STDOUT" == "true" ]; then
-	echo "# Log Stdout" >> $VSFTPD_CONF
-fi
+#if [ "$LOG_STDOUT" == "true" ]; then
+#	echo "# Log Stdout" >> $VSFTPD_CONF
+#fi
 
 # Anonymous mode
 echo "# Anonymous Mode" >> $VSFTPD_CONF
 echo "anonymous_enable=NO" >> $VSFTPD_CONF
 
 # Passive mode
-if [ "$PASV_ENABLE" == "YES" ]; then
-    echo "# Passive Mode" >> $VSFTPD_CONF
-    echo "pasv_enable=$PASV_ENABLE" >> $VSFTPD_CONF # Set to NO if you want to disallow the PASV method of obtaining a data connection
-    echo "pasv_address=$PASV_ADDRESS" >> $VSFTPD_CONF # Passive Address that gets advertised by vsftpd when responding to PASV command
-    echo "pasv_addr_resolve=$PASV_ADDR_RESOLVE" >> $VSFTPD_CONF
-    echo "pasv_max_port=$PASV_MAX_PORT" >> $VSFTPD_CONF
-    echo "pasv_min_port=$PASV_MIN_PORT" >> $VSFTPD_CONF
-fi
+#if [ "$PASV_ENABLE" == "YES" ]; then
+echo "# Passive Mode" >> $VSFTPD_CONF
+echo "pasv_enable=$PASV_ENABLE" >> $VSFTPD_CONF # Set to NO if you want to disallow the PASV method of obtaining a data connection
+echo "pasv_address=$PASV_ADDRESS" >> $VSFTPD_CONF # Passive Address that gets advertised by vsftpd when responding to PASV command
+echo "pasv_addr_resolve=$PASV_ADDR_RESOLVE" >> $VSFTPD_CONF
+echo "pasv_max_port=$PASV_MAX_PORT" >> $VSFTPD_CONF
+echo "pasv_min_port=$PASV_MIN_PORT" >> $VSFTPD_CONF
+#fi
 
 # Run the vsftpd server
 echo "*** START VSFTPD ***"
