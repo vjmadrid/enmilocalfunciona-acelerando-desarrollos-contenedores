@@ -1,24 +1,41 @@
 #!/bin/bash
 
 
-
+echo
 echo "*** CONFIG FTP MODE ***"
 
 # Define ftp configuration (Default : ftp)
 FTP_MODE=${FTP_MODE:-ftp}
 
 if [[ "$FTP_MODE" =~ ^(ftp|ftps|ftps_implicit|ftps_tls)$ ]]; then
-    echo "Valid FTP_MODE -> $FTP_MODE"
+    echo "* Valid FTP_MODE -> $FTP_MODE"
 else
     echo "ERROR : $FTP_MODE is not a supported FTP mode (ftp, ftps, ftps_implicit or ftps_tls)"
     exit 1
 fi
 
-echo "   [EVN] FTP_MODE=${FTP_MODE}"
+if [[ "$FTP_MODE" == "ftp" ]] && [ ! -e /etc/vsftpd/private/vsftpd.pem ] 
+then
+    echo "* Generating self-signed certificate"
+    mkdir -p /etc/vsftpd/private
+
+    openssl req -x509 -nodes -days 7300 \
+        -newkey rsa:2048 -keyout /etc/vsftpd/private/vsftpd.pem -out /etc/vsftpd/private/vsftpd.pem \
+        -subj "/C=FR/O=ACME company/CN=acme.org"
+
+    openssl pkcs12 -export -out /etc/vsftpd/private/vsftpd.pkcs12 -in /etc/vsftpd/private/vsftpd.pem -passout pass:
+
+    chmod 755 /etc/vsftpd/private/vsftpd.pem
+    chmod 755 /etc/vsftpd/private/vsftpd.pkcs12
+
+    echo "* Self-signed certificate generated -> /etc/vsftpd/private/vsftpd.pem"
+fi
+
+echo "[EVN] FTP_MODE=${FTP_MODE}"
 
 
 
-
+echo
 echo "*** CONFIG USER / PASSWORD ***"
 
 # Username for the default FTP account (Default : admin)
@@ -27,10 +44,10 @@ FTP_USER=${FTP_USER:-admin}
 if [ "$FTP_USER" = "*Random*" ]; then
 	# Generate a random user name for FTP_USER
     FTP_USER=`cat /dev/urandom | tr -dc A-Z-a-z-0-9 | head -c${1:-16}`
-	echo "Define user random -> *Random*"
+	echo "* Define user random -> *Random*"
 fi
 
-echo "   [EVN] FTP_USER=${FTP_USER}"
+echo "[EVN] FTP_USER=${FTP_USER}"
 
 
 # Password for the default user (Default : admin)
@@ -39,31 +56,31 @@ FTP_PASS=${FTP_PASS:-admin}
 if [ "$FTP_PASS" = "*Random*" ]; then
 	# Generate a random password for FTP_PASS
     FTP_PASS=`cat /dev/urandom | tr -dc A-Z-a-z-0-9 | head -c${1:-16}`
-	echo "Define password random -> *Random*"
+	echo "* Define password random -> *Random*"
 fi
 
-echo "   [EVN] FTP_PASS=${FTP_PASS}"
+echo "[EVN] FTP_PASS=${FTP_PASS}"
 
 
 
-
+echo
 echo "*** CONFIG USER MODE ***"
 
 # Define user configuration (Default : basic)
 USER_MODE=${USER_MODE:-basic}
 
 if [[ "$USER_MODE" =~ ^(basic|virtual)$ ]]; then
-    echo "Valid USER_MODE -> $USER_MODE"
+    echo "* Valid USER_MODE -> $USER_MODE"
 else
     echo "ERROR : $USER_MODE is not a supported mode (basic or virtual)"
     exit 1
 fi
 
-echo "   [EVN] USER_MODE=${USER_MODE}"
+echo "[EVN] USER_MODE=${USER_MODE}"
 
 
 
-
+echo
 echo "*** CONFIG PASSIVE MODE ***"
 
 # Enable/disable the passive mode  (Default : YES)
@@ -79,30 +96,31 @@ PASV_MIN_PORT=${PASV_MIN_PORT:-21100}
 # Upper bound of the passive mode port range (Default : 21110)
 PASV_MAX_PORT=${PASV_MAX_PORT:-21110}
 
-echo "   [EVN] PASV_ENABLE=${PASV_ENABLE}"
-echo "   [EVN] PASV_ADDRESS=${PASV_ADDRESS}"
-echo "   [EVN] PASV_ADDRESS_INTERFACE=${PASV_ADDRESS_INTERFACE}"
-echo "   [EVN] PASV_ADDR_RESOLVE=${PASV_ADDR_RESOLVE}"
-echo "   [EVN] PASV_MIN_PORT=${PASV_MIN_PORT}"
-echo "   [EVN] PASV_MAX_PORT=${PASV_MAX_PORT}"
+echo "[EVN] PASV_ENABLE=${PASV_ENABLE}"
+echo "[EVN] PASV_ADDRESS=${PASV_ADDRESS}"
+echo "[EVN] PASV_ADDRESS_INTERFACE=${PASV_ADDRESS_INTERFACE}"
+echo "[EVN] PASV_ADDR_RESOLVE=${PASV_ADDR_RESOLVE}"
+echo "[EVN] PASV_MIN_PORT=${PASV_MIN_PORT}"
+echo "[EVN] PASV_MAX_PORT=${PASV_MAX_PORT}"
 
 
+echo
 echo "*** CONFIG LOG STDOUT ***"
 
 # Enable/disable the log stdout  (Default : false)
 LOG_STDOUT=${LOG_STDOUT:-false}
 
 if [ "$LOG_STDOUT" == "false" ]; then
-	echo "Logging to STDOUT Disabled"
+	echo "* Logging to STDOUT Disabled"
 else
-	echo "Logging to STDOUT Enabled"
+	echo "* Logging to STDOUT Enabled"
 fi
 
-echo "   [EVN] LOG_STDOUT=${LOG_STDOUT}"
+echo "[EVN] LOG_STDOUT=${LOG_STDOUT}"
 
 
 
-
+echo
 echo "*** CONFIG VSFTPD ***"
 
 echo "[CONF] Configure PASV_ADDRESS"
@@ -127,6 +145,7 @@ fi
 
 
 
+echo
 echo "*** CONFIG VSFTPD ***"
 
 echo "[CONF] Configure USER_MODE"
@@ -157,52 +176,58 @@ fi
 
 
 
-
+echo
 echo "*** BUILD vsftpd.conf ***"
 
-VSFTPD_CONF=/etc/vsftpd/vsftpd.conf
-echo "[CONF] Configure VSFTPD_CONF local var -> ${VSFTPD_CONF}" 
+CONF_FILE_VSFTPD=/etc/vsftpd/vsftpd.conf
+echo "[CONF] Configure CONF_FILE_VSFTPD local var -> ${CONF_FILE_VSFTPD}" 
 
-more /etc/vsftpd/vsftpd-base.conf >> $VSFTPD_CONF
-echo "[CONF] Add /etc/vsftpd/vsftpd-base.conf >> ${VSFTPD_CONF}" 
+echo "# *** Conf BASE ***" >> $CONF_FILE_VSFTPD
+more /etc/vsftpd/vsftpd-base.conf >> $CONF_FILE_VSFTPD
+echo "[CONF] Add /etc/vsftpd/vsftpd-base.conf >> ${CONF_FILE_VSFTPD}" 
 
-echo "[CONF] Configure FTP mode" 
-if [[ "$FTP_MODE" =~ ^(ftp|ftps|ftps_implicit|ftps_tls)$ ]]; then
-    echo " * Identify FTP mode : $FTP_MODE"
-    more /etc/vsftpd/vsftpd-${FTP_MODE}.conf >> $VSFTPD_CONF
-    echo " * Add /etc/vsftpd/vsftpd-${FTP_MODE}.conf >> ${VSFTPD_CONF}" 
-else
-    echo "ERROR : $FTP_MODE is not a supported FTP mode (ftp, ftps, ftps_implicit or ftps_tls)"
-    exit 1
-fi
+echo "# *** Conf FTP mode -> ${FTP_MODE}  ***" >> $CONF_FILE_VSFTPD
+more /etc/vsftpd/vsftpd-${FTP_MODE}.conf >> $CONF_FILE_VSFTPD
+echo "[CONF] Append /etc/vsftpd/vsftpd-${FTP_MODE}.conf >> ${CONF_FILE_VSFTPD}" 
 
 
 
-echo "[CONF] Update VSFTPD_CONF with new properties according to env variables and/or static values -> ${VSFTPD_CONF}" 
 
-echo "" >> $VSFTPD_CONF
-echo "# The following config lines are added by the run-vsftpd.sh script " >> $VSFTPD_CONF
+echo
+echo "*** UPDATE vsftpd.conf ***"
+echo "[CONF] Update CONF_FILE_VSFTPD with new properties according to env variables and/or static values -> ${CONF_FILE_VSFTPD}" 
+
+echo "" >> $CONF_FILE_VSFTPD
+echo "# *** Conf run-vsftpd.sh script ***" >> $CONF_FILE_VSFTPD
 
 # Log Stdout
 #if [ "$LOG_STDOUT" == "true" ]; then
-#	echo "# Log Stdout" >> $VSFTPD_CONF
+#	echo "# Log Stdout" >> $CONF_FILE_VSFTPD
 #fi
 
 # Anonymous mode
-echo "# Anonymous Mode" >> $VSFTPD_CONF
-echo "anonymous_enable=NO" >> $VSFTPD_CONF
+echo " * Add Anonymous Mode"
+
+echo "# Anonymous Mode" >> $CONF_FILE_VSFTPD
+echo "anonymous_enable=NO" >> $CONF_FILE_VSFTPD
 
 # Passive mode
-#if [ "$PASV_ENABLE" == "YES" ]; then
-echo "# Passive Mode" >> $VSFTPD_CONF
-echo "pasv_enable=$PASV_ENABLE" >> $VSFTPD_CONF # Set to NO if you want to disallow the PASV method of obtaining a data connection
-echo "pasv_address=$PASV_ADDRESS" >> $VSFTPD_CONF # Passive Address that gets advertised by vsftpd when responding to PASV command
-echo "pasv_addr_resolve=$PASV_ADDR_RESOLVE" >> $VSFTPD_CONF
-echo "pasv_max_port=$PASV_MAX_PORT" >> $VSFTPD_CONF
-echo "pasv_min_port=$PASV_MIN_PORT" >> $VSFTPD_CONF
-#fi
+if [ "$PASV_ENABLE" == "YES" ]; then
+    echo " * Add Passive Mode"
+
+    echo "# Passive Mode" >> $CONF_FILE_VSFTPD
+    echo "pasv_enable=$PASV_ENABLE" >> $CONF_FILE_VSFTPD # Set to NO if you want to disallow the PASV method of obtaining a data connection
+    echo "pasv_address=$PASV_ADDRESS" >> $CONF_FILE_VSFTPD # Passive Address that gets advertised by vsftpd when responding to PASV command
+    echo "pasv_addr_resolve=$PASV_ADDR_RESOLVE" >> $CONF_FILE_VSFTPD
+    echo "pasv_max_port=$PASV_MAX_PORT" >> $CONF_FILE_VSFTPD
+    echo "pasv_min_port=$PASV_MIN_PORT" >> $CONF_FILE_VSFTPD
+fi
+
+# Show CONF_FILE_VSFTPD result
+# cat $CONF_FILE_VSFTPD
 
 # Run the vsftpd server
+echo
 echo "*** START VSFTPD ***"
 echo "[START] VSFTPD daemon starting"
-/usr/sbin/vsftpd $VSFTPD_CONF
+/usr/sbin/vsftpd $CONF_FILE_VSFTPD

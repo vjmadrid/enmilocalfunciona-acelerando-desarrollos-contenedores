@@ -4,9 +4,9 @@ RUN apk update \
 	&& apk upgrade \
 	&& apk --update --no-cache add bash openssl vsftpd 
 
-RUN openssl req -x509 -nodes -days 7300 \
-            -newkey rsa:2048 -keyout /etc/vsftpd/vsftpd.pem -out /etc/vsftpd/vsftpd.pem \
-            -subj "/C=FR/O=ACME company/CN=acme.org"
+#RUN openssl req -x509 -nodes -days 7300 \
+#            -newkey rsa:2048 -keyout /etc/vsftpd/vsftpd.pem -out /etc/vsftpd/vsftpd.pem \
+#            -subj "/C=FR/O=ACME company/CN=acme.org"
 
 RUN mkdir -p /home/vsftpd/
 RUN chown -R ftp:ftp /home/vsftpd/

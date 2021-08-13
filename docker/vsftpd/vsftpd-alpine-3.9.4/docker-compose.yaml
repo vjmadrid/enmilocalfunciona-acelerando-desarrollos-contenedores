@@ -10,11 +10,11 @@ services:
         USER_ID: 1000
         GROUP_ID: 1000
     environment:
-        # FTP_MODE : ftp, ftps, ftps_implicit or ftps_tls
+        # FTP_MODE use : ftp, ftps, ftps_implicit or ftps_tls
         FTP_MODE: 'ftp'
         FTP_USER: 'user'
         FTP_PASS: 'user'
-        # USER_MODE : basic or virtual
+        # USER_MODE use : basic or virtual
         USER_MODE: 'basic'
         ANONYMOUS_ACCESS: '*Boolean*'
         PASV_ENABLE: 'YES'
