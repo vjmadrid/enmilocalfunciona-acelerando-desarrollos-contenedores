@@ -2,7 +2,7 @@ FROM alpine:3.14.1
 
 RUN apk update \
 	&& apk upgrade \
-	&& apk --update --no-cache add bash openssl vsftpd 
+	&& apk --update --no-cache add bash openssl vsftpd db-utils
 
 #RUN openssl req -x509 -nodes -days 7300 \
 #            -newkey rsa:2048 -keyout /etc/vsftpd/vsftpd.pem -out /etc/vsftpd/vsftpd.pem \

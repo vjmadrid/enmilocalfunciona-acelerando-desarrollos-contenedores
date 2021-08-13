@@ -141,6 +141,25 @@ echo "[EVN] PASV_MIN_PORT=${PASV_MIN_PORT}"
 echo "[EVN] PASV_MAX_PORT=${PASV_MAX_PORT}"
 
 
+
+# *****************************
+#  CONFIG ANONYMOUS
+# *****************************
+
+echo
+echo "*** CONFIG ANONYMOUS ***"
+
+# Enable/disable the log stdout  (Default : false)
+ANONYMOUS_ACCESS=${ANONYMOUS_ACCESS:-false}
+
+echo "[EVN] ANONYMOUS_ACCESS=${ANONYMOUS_ACCESS}"
+
+
+
+# *****************************
+#  CONFIG LOG STDOUT
+# *****************************
+
 echo
 echo "*** CONFIG LOG STDOUT ***"
 
@@ -150,6 +169,10 @@ LOG_STDOUT=${LOG_STDOUT:-false}
 echo "[EVN] LOG_STDOUT=${LOG_STDOUT}"
 
 
+
+# *****************************
+#  CONFIG VSFTPD
+# *****************************
 
 echo
 echo "*** CONFIG VSFTPD ***"
@@ -177,8 +200,6 @@ fi
 
 
 echo
-echo "*** CONFIG VSFTPD ***"
-
 echo "[CONF] Configure USER_MODE"
 
 if [ "$USER_MODE" = "basic" ]; then
@@ -206,7 +227,6 @@ fi
 
 
 
-
 echo
 echo "*** BUILD vsftpd.conf ***"
 
@@ -223,7 +243,6 @@ echo "[CONF] Append /etc/vsftpd/vsftpd-${FTP_MODE}.conf >> ${CONF_FILE_VSFTPD}"
 
 
 
-
 echo
 echo "*** UPDATE vsftpd.conf ***"
 echo "[CONF] Update CONF_FILE_VSFTPD with new properties according to env variables and/or static values -> ${CONF_FILE_VSFTPD}" 
@@ -237,19 +256,26 @@ echo "# *** Conf run-vsftpd.sh script ***" >> $CONF_FILE_VSFTPD
 # **************
 echo " * Add Anonymous Mode"
 
-echo "# Anonymous Mode" >> $CONF_FILE_VSFTPD
-echo "anonymous_enable=NO" >> $CONF_FILE_VSFTPD
+#echo "# Anonymous Mode" >> $CONF_FILE_VSFTPD
+
+if [ "${ANONYMOUS_ACCESS}" = "true" ]; then
+    # Change property by default -> if exist 
+    sed -i "s|anonymous_enable=NO|anonymous_enable=YES|g" $CONF_FILE_VSFTPD
+
+    # Add property -> if no exist
+    #echo "anonymous_enable=NO" >> $CONF_FILE_VSFTPD
+fi
 
 
 # ************
 # Active mode
 # ************
-echo " * Add Active Mode"
+#echo " * Add Active Mode"
 
-echo "# Active Mode" >> $CONF_FILE_VSFTPD
-echo "port_enable=YES" >> $CONF_FILE_VSFTPD
-echo "connect_from_port_20=YES" >> $CONF_FILE_VSFTPD
-echo "ftp_data_port=20" >> $CONF_FILE_VSFTPD
+#echo "# Active Mode" >> $CONF_FILE_VSFTPD
+#echo "port_enable=YES" >> $CONF_FILE_VSFTPD
+#echo "connect_from_port_20=YES" >> $CONF_FILE_VSFTPD
+#echo "ftp_data_port=20" >> $CONF_FILE_VSFTPD
 
 
 # ************
@@ -275,7 +301,7 @@ if [ "$USER_MODE" = "virtual" ]; then
 
     echo "# Virtual User Mode" >> $CONF_FILE_VSFTPD
     echo "pam_service_name=vsftpd_virtual" >> $CONF_FILE_VSFTPD
-    #echo "virtual_use_local_privs=YES" >> $CONF_FILE_VSFTPD
+    echo "virtual_use_local_privs=YES" >> $CONF_FILE_VSFTPD # Virtual users will use the same permissions as anonymous
 fi
 
 
@@ -296,6 +322,7 @@ echo "xferlog_std_format=YES" >> $CONF_FILE_VSFTPD
 # WARNING - changing this filename affects /etc/logrotate.d/vsftpd.log
 echo "xferlog_file=/var/log/vsftpd/vsftpd.log" >> $CONF_FILE_VSFTPD
 # #echo "xferlog_file=/dev/stdout" >> $CONF_FILE_VSFTPD
+echo "vsftpd_log_file=/var/log/vsftpd.log" >> $CONF_FILE_VSFTPD
 
 echo "syslog_enable=NO" >> $CONF_FILE_VSFTPD
 echo "dual_log_enable=YES" >> $CONF_FILE_VSFTPD
@@ -308,25 +335,23 @@ if [ "$LOG_STDOUT" == "false" ]; then
 	echo "* Logging to STDOUT Disabled"
 else
 	echo "* Logging to STDOUT Enabled"
-
-    
-
     #export LOG_FILE=`grep xferlog_file= $CONF_FILE_VSFTPD|cut -d= -f2`
-
     #echo "[EVN] LOG_FILE=${LOG_FILE}"
-
     #mkdir -p /var/log/vsftpd
 	#touch ${LOG_FILE}
-
     #tail -f ${LOG_FILE} | /dev/stdout &
-
     #/usr/bin/ln -sf /dev/stdout $LOG_FILE
     #echo "[EVN] LOG_FILE=${LOG_FILE}"
 fi
 
 
+
 # Show CONF_FILE_VSFTPD result
-#cat $CONF_FILE_VSFTPD
+echo "***********************************************"
+cat $CONF_FILE_VSFTPD
+echo "***********************************************"
+
+
 
 # Run the vsftpd server
 echo
