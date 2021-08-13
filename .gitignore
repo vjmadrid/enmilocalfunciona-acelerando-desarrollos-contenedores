@@ -37,7 +37,7 @@ local.properties
 
 output/
 
-docker/vsftpd/vsftpd-1.0/vsftpd-1.0-vol/
+docker/vsftpd/vsftpd-alpine-3.9.4/vsftpd-alpine-3.9.4-vol/
 custom-mysql-5.7/
 custom-postgres-11/
 
