@@ -17,13 +17,9 @@ COPY ./config/vsftpd-ftps.conf /etc/vsftpd/vsftpd-ftps.conf
 COPY ./config/vsftpd-ftps_implicit.conf /etc/vsftpd/vsftpd-ftps_implicit.conf
 COPY ./config/vsftpd-ftps_tls.conf /etc/vsftpd/vsftpd-ftps_tls.conf
 
-COPY ./config/vsftpd_virtual /etc/pam.d/
+COPY ./config/virtual/vsftpd_virtual /etc/pam.d/
 
 COPY ./config/run-vsftpd.sh /usr/sbin/
-
-RUN mkdir -p /home/vsftpd/
-RUN chown -R ftp:ftp /home/vsftpd/
-
 RUN chmod +x /usr/sbin/run-vsftpd.sh
 
 CMD ["/usr/sbin/run-vsftpd.sh"]

@@ -207,10 +207,12 @@ if [ "$USER_MODE" = "basic" ]; then
 	# Add the FTP_USER, change his password and declare him as the owner of his home folder and all subfolders
     addgroup -g 433 -S $FTP_USER
     adduser -u 431 -D -G $FTP_USER -h /home/vsftpd/$FTP_USER -s /bin/false  $FTP_USER
+    echo "[CONF] Created FTP user ${FTP_USER} -> /home/vsftpd/${FTP_USER}"
 
-    echo "$FTP_USER:$FTP_PASS" | /usr/sbin/chpasswd
+    echo "$FTP_USER:$FTP_PASS" | /usr/sbin/chpasswd 2> /dev/null
 
     chown -R $FTP_USER:$FTP_USER /home/vsftpd/$FTP_USER
+    echo "[CONF] Set chown for '${FTP_USER}' user -> /home/vsftpd/${FTP_USER}"
 else
     # Create home dir and update vsftpd user db
     mkdir -p "/home/vsftpd/${FTP_USER}"
@@ -231,13 +233,25 @@ echo
 echo "*** BUILD vsftpd.conf ***"
 
 CONF_FILE_VSFTPD=/etc/vsftpd/vsftpd.conf
-echo "[CONF] Configure CONF_FILE_VSFTPD local var -> ${CONF_FILE_VSFTPD}" 
+echo "[CONF] Set CONF_FILE_VSFTPD local var -> ${CONF_FILE_VSFTPD}" 
 
-echo "# *** Conf BASE ***" >> $CONF_FILE_VSFTPD
+# Add base file section
+echo "" >> $CONF_FILE_VSFTPD
+echo "# **************** " >> $CONF_FILE_VSFTPD
+echo "# CONFIG BASE FILE " >> $CONF_FILE_VSFTPD
+echo "# **************** " >> $CONF_FILE_VSFTPD
+echo "" >> $CONF_FILE_VSFTPD
+
 more /etc/vsftpd/vsftpd-base.conf >> $CONF_FILE_VSFTPD
-echo "[CONF] Add /etc/vsftpd/vsftpd-base.conf >> ${CONF_FILE_VSFTPD}" 
+echo "[CONF] Append /etc/vsftpd/vsftpd-base.conf >> ${CONF_FILE_VSFTPD}" 
 
-echo "# *** Conf FTP mode -> ${FTP_MODE}  ***" >> $CONF_FILE_VSFTPD
+# Add FTP mode file section
+echo "" >> $CONF_FILE_VSFTPD
+echo "# ***************************** " >> $CONF_FILE_VSFTPD
+echo "# CONFIG FTP mode -> ${FTP_MODE}" >> $CONF_FILE_VSFTPD
+echo "# ***************************** " >> $CONF_FILE_VSFTPD
+echo "" >> $CONF_FILE_VSFTPD
+
 more /etc/vsftpd/vsftpd-${FTP_MODE}.conf >> $CONF_FILE_VSFTPD
 echo "[CONF] Append /etc/vsftpd/vsftpd-${FTP_MODE}.conf >> ${CONF_FILE_VSFTPD}" 
 
@@ -247,14 +261,20 @@ echo
 echo "*** UPDATE vsftpd.conf ***"
 echo "[CONF] Update CONF_FILE_VSFTPD with new properties according to env variables and/or static values -> ${CONF_FILE_VSFTPD}" 
 
+
+# Add run-vsftpd.sh script generation section
 echo "" >> $CONF_FILE_VSFTPD
-echo "# *** Conf run-vsftpd.sh script ***" >> $CONF_FILE_VSFTPD
+echo "# ***************************" >> $CONF_FILE_VSFTPD
+echo "# CONFIG run-vsftpd.sh script" >> $CONF_FILE_VSFTPD
+echo "# ***************************" >> $CONF_FILE_VSFTPD
+echo "" >> $CONF_FILE_VSFTPD
 
 
 # **************
 # Anonymous mode
 # **************
-echo " * Add Anonymous Mode"
+
+echo " * Prepare Anonymous Mode"
 
 #echo "# Anonymous Mode" >> $CONF_FILE_VSFTPD
 
@@ -270,20 +290,22 @@ fi
 # ************
 # Active mode
 # ************
-#echo " * Add Active Mode"
+echo " * Prepare Active Mode"
 
-#echo "# Active Mode" >> $CONF_FILE_VSFTPD
-#echo "port_enable=YES" >> $CONF_FILE_VSFTPD
-#echo "connect_from_port_20=YES" >> $CONF_FILE_VSFTPD
-#echo "ftp_data_port=20" >> $CONF_FILE_VSFTPD
+echo "" >> $CONF_FILE_VSFTPD
+echo "# Active Mode" >> $CONF_FILE_VSFTPD
+echo "port_enable=YES" >> $CONF_FILE_VSFTPD
+echo "connect_from_port_20=YES" >> $CONF_FILE_VSFTPD
+echo "ftp_data_port=20" >> $CONF_FILE_VSFTPD
 
 
 # ************
 # Passive mode
 # ************
 if [ "$PASV_ENABLE" == "YES" ]; then
-    echo " * Add Passive Mode"
+    echo " * Prepare Passive Mode"
 
+    echo "" >> $CONF_FILE_VSFTPD
     echo "# Passive Mode" >> $CONF_FILE_VSFTPD
     echo "pasv_enable=$PASV_ENABLE" >> $CONF_FILE_VSFTPD # Set to NO if you want to disallow the PASV method of obtaining a data connection
     echo "pasv_address=$PASV_ADDRESS" >> $CONF_FILE_VSFTPD # Passive Address that gets advertised by vsftpd when responding to PASV command
@@ -308,24 +330,24 @@ fi
 # *******
 # Logging
 # *******
-echo " * Add Logging"
+#echo " * Add Logging"
 
-echo "# Logging" >> $CONF_FILE_VSFTPD
-echo "log_ftp_protocol=YES" >> $CONF_FILE_VSFTPD
+#echo "# Logging" >> $CONF_FILE_VSFTPD
+#echo "log_ftp_protocol=YES" >> $CONF_FILE_VSFTPD
 # The target log file can be vsftpd_log_file or xferlog_file.
 # This depends on setting xferlog_std_format parameter
-echo "xferlog_enable=YES" >> $CONF_FILE_VSFTPD
+#echo "xferlog_enable=YES" >> $CONF_FILE_VSFTPD
 # If you want, you can have your log file in standard ftpd xferlog format.
 # Note that the default log file location is /var/log/xferlog in this case.
-echo "xferlog_std_format=YES" >> $CONF_FILE_VSFTPD
+#echo "xferlog_std_format=YES" >> $CONF_FILE_VSFTPD
 # The name of log file when xferlog_enable=YES and xferlog_std_format=YES
 # WARNING - changing this filename affects /etc/logrotate.d/vsftpd.log
-echo "xferlog_file=/var/log/vsftpd/vsftpd.log" >> $CONF_FILE_VSFTPD
+#echo "xferlog_file=/var/log/vsftpd/vsftpd.log" >> $CONF_FILE_VSFTPD
 # #echo "xferlog_file=/dev/stdout" >> $CONF_FILE_VSFTPD
-echo "vsftpd_log_file=/var/log/vsftpd.log" >> $CONF_FILE_VSFTPD
+#echo "vsftpd_log_file=/var/log/vsftpd.log" >> $CONF_FILE_VSFTPD
 
-echo "syslog_enable=NO" >> $CONF_FILE_VSFTPD
-echo "dual_log_enable=YES" >> $CONF_FILE_VSFTPD
+#echo "syslog_enable=NO" >> $CONF_FILE_VSFTPD
+#echo "dual_log_enable=YES" >> $CONF_FILE_VSFTPD
 
 
 
