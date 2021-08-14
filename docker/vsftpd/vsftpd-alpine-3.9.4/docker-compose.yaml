@@ -6,13 +6,13 @@ services:
     build: 
       context: ./vsftpd-alpine-3.9.4
       dockerfile: Dockerfile
-      #args:
-      #  USER_ID: 1000
-      #  GROUP_ID: 1000
+      args:
+        USER_ID: 1000
+        GROUP_ID: 1000
     environment:
         DEBUG: 'false'
         # Use FTP_MODE : ftp, ftps, ftps_implicit or ftps_tls
-        FTP_MODE: 'ftp'
+        FTP_MODE: 'ftps'
         FTP_USER: 'user'
         FTP_PASS: 'user'
         #FTP_PASS_HASH: '*Hash*'
@@ -30,6 +30,7 @@ services:
       - ./vsftpd-alpine-3.9.4-vol/home:/home/vsftpd
       - ./vsftpd-alpine-3.9.4-vol/guest:/guest/vsftpd
       - ./vsftpd-alpine-3.9.4-vol/logs:/var/log/
+      - ./vsftpd-alpine-3.9.4-vol/logs-ftp:/var/log/vsftpd
       - ./vsftpd-alpine-3.9.4-vol/private:/etc/vsftpd/private
     ports:
       - "0.0.0.0:20:20"

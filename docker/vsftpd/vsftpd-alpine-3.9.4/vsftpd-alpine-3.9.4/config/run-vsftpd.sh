@@ -4,6 +4,24 @@ set -e
 
 [[ "${DEBUG}" == "true" ]] && set -x
 
+#[[ "${DEBUG}" == "true" ]] && set -o xtrace
+
+
+
+# ***********************
+#  CONFIG VSFTPD GENERAL
+# ***********************
+
+echo
+echo "*** CONFIG VSFTPD GENERAL ***"
+
+ETC_FOLDER_VSFTPD=/etc/vsftpd
+CONF_FILE_VSFTPD=${ETC_FOLDER_VSFTPD}/vsftpd.conf
+LOG_FILE_VSFTPD=/var/log/vsftpd.log
+
+echo "[EVN] ETC_FOLDER_VSFTPD=${ETC_FOLDER_VSFTPD}"
+echo "[EVN] CONF_FILE_VSFTPD=${CONF_FILE_VSFTPD}"
+echo "[EVN] LOG_FILE_VSFTPD=${LOG_FILE_VSFTPD}"
 
 
 # *****************
@@ -23,21 +41,22 @@ else
     exit 1
 fi
 
-if [[ "$FTP_MODE" == "ftps" ]] && [ ! -e /etc/vsftpd/private/vsftpd.pem ] 
+if [[ "$FTP_MODE" == "ftps" ]] && [ ! -e ${ETC_FOLDER_VSFTPD}/private/vsftpd.pem ] 
 then
     echo "* Generating self-signed certificate"
-    mkdir -p /etc/vsftpd/private
+    mkdir -p ${ETC_FOLDER_VSFTPD}/private
 
     openssl req -x509 -nodes -days 7300 \
-        -newkey rsa:2048 -keyout /etc/vsftpd/private/vsftpd.pem -out /etc/vsftpd/private/vsftpd.pem \
-        -subj "/C=FR/O=ACME company/CN=acme.org"
+        -newkey rsa:2048 -keyout ${ETC_FOLDER_VSFTPD}/private/vsftpd.pem -out ${ETC_FOLDER_VSFTPD}/private/vsftpd.pem \
+        -subj "/C=FR/O=ACME company/CN=acme.org" \
+        -batch || { echo "Failed to create the vsftpd self-signed certificate"; exit 1; }
 
-    openssl pkcs12 -export -out /etc/vsftpd/private/vsftpd.pkcs12 -in /etc/vsftpd/private/vsftpd.pem -passout pass:
+    openssl pkcs12 -export -out ${ETC_FOLDER_VSFTPD}/private/vsftpd.pkcs12 -in ${ETC_FOLDER_VSFTPD}/private/vsftpd.pem -passout pass:
 
-    chmod 755 /etc/vsftpd/private/vsftpd.pem
-    chmod 755 /etc/vsftpd/private/vsftpd.pkcs12
+    chmod 755 ${ETC_FOLDER_VSFTPD}/private/vsftpd.pem
+    chmod 755 ${ETC_FOLDER_VSFTPD}/private/vsftpd.pkcs12
 
-    echo "* Self-signed certificate generated -> /etc/vsftpd/private/vsftpd.pem"
+    echo "* Self-signed certificate generated -> ${ETC_FOLDER_VSFTPD}/private/vsftpd.pem"
 fi
 
 echo "[EVN] FTP_MODE=${FTP_MODE}"
@@ -200,7 +219,7 @@ fi
 
 
 echo
-echo "[CONF] Configure USER_MODE"
+echo "[CONF] Configure USER_MODE : ${USER_MODE}"
 
 if [ "$USER_MODE" = "basic" ]; then
     
@@ -214,26 +233,52 @@ if [ "$USER_MODE" = "basic" ]; then
     chown -R $FTP_USER:$FTP_USER /home/vsftpd/$FTP_USER
     echo "[CONF] Set chown for '${FTP_USER}' user -> /home/vsftpd/${FTP_USER}"
 else
+    PAM_MODULE_VSFTPD=/etc/pam.d/vsftpd_virtual
+    echo "* Set PAM_MODULE_VSFTPD var -> ${PAM_MODULE_VSFTPD}"
+
+    # Create PAM module if not exist
+    #cat /dev/null > $PAM_MODULE_VSFTPD
+    #echo "[CONF] Creating the vsftpd_virtual PAM module"
+    #echo "auth required pam_userdb.so crypt=hash db=${ETC_FOLDER_VSFTPD}/virtual_users" > $PAM_MODULE_VSFTPD
+    #echo "account required pam_userdb.so crypt=hash db=${ETC_FOLDER_VSFTPD}/virtual_users" >> $PAM_MODULE_VSFTPD
+
     # Create home dir and update vsftpd user db
     mkdir -p "/home/vsftpd/${FTP_USER}"
-    echo "[CONF] Created home directory for user ${FTP_USER} -> /home/vsftpd/${FTP_USER}"
+
+    addgroup -g 433 -S $FTP_USER
+    adduser -u 431 -D -G $FTP_USER -h /home/vsftpd/$FTP_USER -s /bin/false  $FTP_USER
+    chown -R $FTP_USER:$FTP_USER /home/vsftpd/$FTP_USER
+
+    #chown -R ftp:ftp /home/vsftpd/ || \
+    #    { echo "No update /home/vsftpd/"; exit 1; }
+    
+    echo "* Created home directory for user ${FTP_USER} -> /home/vsftpd/${FTP_USER}"
 
     # Add new user
-    echo -e "${FTP_USER}\n${FTP_PASS}" > /etc/vsftpd/virtual_users.txt
-    echo "[CONF] Updated /etc/vsftpd/virtual_users.txt with user :: [${FTP_USER}]"
+    echo -e "${FTP_USER}\n${FTP_PASS}" > ${ETC_FOLDER_VSFTPD}/virtual_users.txt
+    echo "* Updated ${ETC_FOLDER_VSFTPD}/virtual_users.txt with user :: [${FTP_USER}]"
 
     # Update vsftpd database with the new user
-    /usr/bin/db_load -T -t hash -f /etc/vsftpd/virtual_users.txt /etc/vsftpd/virtual_users.db
-    echo "[CONF] Updated vsftpd database -> load with /etc/vsftpd/virtual_users.txt"
+    /usr/bin/db_load -T -t hash -f ${ETC_FOLDER_VSFTPD}/virtual_users.txt ${ETC_FOLDER_VSFTPD}/virtual_users.db || \
+        { echo "Failed to create the FTP user database"; exit 1; }
+    
+    echo "* Updated vsftpd database -> load with ${ETC_FOLDER_VSFTPD}/virtual_users.txt"
+
+    rm ${ETC_FOLDER_VSFTPD}/virtual_users.txt
+
+    
+    #echo "auth required pam_mysql.so user=mysqluser passwd=mysqlpass host=rdshost.yourcompany.com db=rdsftpauthdb table=accounts usercolumn=username passwdcolumn=passwd crypt=2" >> /etc/pam.d/vsftpd
+    #echo "account required pam_mysql.so user=mysqluser passwd=mysqlpass host=rdshost.yourcompany.com db=rdsftpauthdb table=accounts usercolumn=username passwdcolumn=passwd crypt=2" >> /etc/pam.d/vsftpd
+
+    
+
+
 fi
 
 
 
 echo
 echo "*** BUILD vsftpd.conf ***"
-
-CONF_FILE_VSFTPD=/etc/vsftpd/vsftpd.conf
-echo "[CONF] Set CONF_FILE_VSFTPD local var -> ${CONF_FILE_VSFTPD}" 
 
 # Add base file section
 echo "" >> $CONF_FILE_VSFTPD
@@ -242,8 +287,8 @@ echo "# CONFIG BASE FILE " >> $CONF_FILE_VSFTPD
 echo "# **************** " >> $CONF_FILE_VSFTPD
 echo "" >> $CONF_FILE_VSFTPD
 
-more /etc/vsftpd/vsftpd-base.conf >> $CONF_FILE_VSFTPD
-echo "[CONF] Append /etc/vsftpd/vsftpd-base.conf >> ${CONF_FILE_VSFTPD}" 
+more ${ETC_FOLDER_VSFTPD}/vsftpd-base.conf >> $CONF_FILE_VSFTPD
+echo "[CONF] Append ${ETC_FOLDER_VSFTPD}/vsftpd-base.conf >> ${CONF_FILE_VSFTPD}" 
 
 # Add FTP mode file section
 echo "" >> $CONF_FILE_VSFTPD
@@ -252,8 +297,8 @@ echo "# CONFIG FTP mode -> ${FTP_MODE}" >> $CONF_FILE_VSFTPD
 echo "# ***************************** " >> $CONF_FILE_VSFTPD
 echo "" >> $CONF_FILE_VSFTPD
 
-more /etc/vsftpd/vsftpd-${FTP_MODE}.conf >> $CONF_FILE_VSFTPD
-echo "[CONF] Append /etc/vsftpd/vsftpd-${FTP_MODE}.conf >> ${CONF_FILE_VSFTPD}" 
+more ${ETC_FOLDER_VSFTPD}/vsftpd-${FTP_MODE}.conf >> $CONF_FILE_VSFTPD
+echo "[CONF] Append ${ETC_FOLDER_VSFTPD}/vsftpd-${FTP_MODE}.conf >> ${CONF_FILE_VSFTPD}" 
 
 
 
@@ -304,7 +349,7 @@ echo "ftp_data_port=20" >> $CONF_FILE_VSFTPD
 # ************
 if [ "$PASV_ENABLE" == "YES" ]; then
     echo " * Prepare Passive Mode"
-
+    
     echo "" >> $CONF_FILE_VSFTPD
     echo "# Passive Mode" >> $CONF_FILE_VSFTPD
     echo "pasv_enable=$PASV_ENABLE" >> $CONF_FILE_VSFTPD # Set to NO if you want to disallow the PASV method of obtaining a data connection
@@ -312,6 +357,7 @@ if [ "$PASV_ENABLE" == "YES" ]; then
     echo "pasv_addr_resolve=$PASV_ADDR_RESOLVE" >> $CONF_FILE_VSFTPD
     echo "pasv_max_port=$PASV_MAX_PORT" >> $CONF_FILE_VSFTPD
     echo "pasv_min_port=$PASV_MIN_PORT" >> $CONF_FILE_VSFTPD
+
 fi
 
 
@@ -319,32 +365,46 @@ fi
 # Virtual user mode
 # *****************
 if [ "$USER_MODE" = "virtual" ]; then
-    echo " * Add Virtual User Mode"
-
+    echo " * Prepare Virtual User Mode"
+    
+    echo "" >> $CONF_FILE_VSFTPD
     echo "# Virtual User Mode" >> $CONF_FILE_VSFTPD
-    echo "pam_service_name=vsftpd_virtual" >> $CONF_FILE_VSFTPD
+    echo "pam_service_name=vsftpd_virtual" >> $CONF_FILE_VSFTPD # PAM file name
     echo "virtual_use_local_privs=YES" >> $CONF_FILE_VSFTPD # Virtual users will use the same permissions as anonymous
+    echo "user_sub_token=\$USER" >> $CONF_FILE_VSFTPD
+    echo "local_root=/home/vsftpd/\$USER" >> $CONF_FILE_VSFTPD
+    #echo "guest_username=virtual" >> $CONF_FILE_VSFTPD
+    
+    
+    
+    # Change property by default -> if exist 
+    sed -i "s|guest_enable=NO|guest_enable=YES|g" $CONF_FILE_VSFTPD # Enable virtual users
+    
 fi
 
 
 # *******
 # Logging
 # *******
-#echo " * Add Logging"
+echo " * Add Logging"
 
-#echo "# Logging" >> $CONF_FILE_VSFTPD
-#echo "log_ftp_protocol=YES" >> $CONF_FILE_VSFTPD
+echo "" >> $CONF_FILE_VSFTPD
+echo "# Logging" >> $CONF_FILE_VSFTPD
+
 # The target log file can be vsftpd_log_file or xferlog_file.
 # This depends on setting xferlog_std_format parameter
-#echo "xferlog_enable=YES" >> $CONF_FILE_VSFTPD
+echo "xferlog_enable=YES" >> $CONF_FILE_VSFTPD
+
 # If you want, you can have your log file in standard ftpd xferlog format.
 # Note that the default log file location is /var/log/xferlog in this case.
-#echo "xferlog_std_format=YES" >> $CONF_FILE_VSFTPD
+echo "xferlog_std_format=YES" >> $CONF_FILE_VSFTPD
+
 # The name of log file when xferlog_enable=YES and xferlog_std_format=YES
 # WARNING - changing this filename affects /etc/logrotate.d/vsftpd.log
 #echo "xferlog_file=/var/log/vsftpd/vsftpd.log" >> $CONF_FILE_VSFTPD
 # #echo "xferlog_file=/dev/stdout" >> $CONF_FILE_VSFTPD
-#echo "vsftpd_log_file=/var/log/vsftpd.log" >> $CONF_FILE_VSFTPD
+echo "vsftpd_log_file=/var/log/vsftpd.log" >> $CONF_FILE_VSFTPD
+echo "log_ftp_protocol=YES" >> $CONF_FILE_VSFTPD
 
 #echo "syslog_enable=NO" >> $CONF_FILE_VSFTPD
 #echo "dual_log_enable=YES" >> $CONF_FILE_VSFTPD
@@ -357,26 +417,38 @@ if [ "$LOG_STDOUT" == "false" ]; then
 	echo "* Logging to STDOUT Disabled"
 else
 	echo "* Logging to STDOUT Enabled"
-    #export LOG_FILE=`grep xferlog_file= $CONF_FILE_VSFTPD|cut -d= -f2`
-    #echo "[EVN] LOG_FILE=${LOG_FILE}"
-    #mkdir -p /var/log/vsftpd
+
+    mkdir -p /var/log/vsftpd
+
+    #Create
+    echo > /var/log/vsftpd/vsftpd.log
+
+    export LOG_FILE=`grep vsftpd_log_file= $CONF_FILE_VSFTPD|cut -d= -f2`
+    echo "[EVN] LOG_FILE=${LOG_FILE}"
+    
 	#touch ${LOG_FILE}
     #tail -f ${LOG_FILE} | /dev/stdout &
     #/usr/bin/ln -sf /dev/stdout $LOG_FILE
-    #echo "[EVN] LOG_FILE=${LOG_FILE}"
+
+    
+    #tail -f /var/log/vsftpd/vsftpd.log
 fi
 
 
 
 # Show CONF_FILE_VSFTPD result
-echo "***********************************************"
-cat $CONF_FILE_VSFTPD
-echo "***********************************************"
+#echo "***********************************************"
+#cat $CONF_FILE_VSFTPD
+#echo "***********************************************"
 
 
+
+#echo "Fixing permissions"
+#chmod 600 -R ${ETC_FOLDER_VSFTPD}
 
 # Run the vsftpd server
 echo
 echo "*** START VSFTPD ***"
 echo "[START] VSFTPD daemon starting"
-/usr/sbin/vsftpd $CONF_FILE_VSFTPD
+/usr/sbin/vsftpd $CONF_FILE_VSFTPD || \
+	{ echo "Failed to execute vsftpd"; exit 1; }
