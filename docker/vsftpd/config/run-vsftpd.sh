@@ -6,6 +6,9 @@ set -e
 
 #[[ "${DEBUG}" == "true" ]] && set -o xtrace
 
+vsftpd -version
+
+cp /etc/vsftpd/vsftpd.conf /tmp/vsftpd.conf.origin
 
 
 # ***********************
@@ -15,22 +18,6 @@ set -e
 echo
 echo "*** CONFIG VSFTPD GENERAL ***"
 
-echo "* Linux version used"
-echo
-
-cat /etc/*release
-
-echo "* VSFTP version used (remember install package)"
-echo
-
-VSFTPD_VERSION=`/usr/sbin/vsftpd -version 0>&1`
-
-echo "[EVN] VSFTPD_VERSION=${VSFTPD_VERSION}"
-
-cp /etc/vsftpd/vsftpd.conf /tmp/vsftpd.conf.origin
-echo "* Generate backup default vsftpd.conf -> /tmp/vsftpd.conf.origin"
-echo
-
 ETC_FOLDER_VSFTPD=/etc/vsftpd
 CONF_FILE_VSFTPD=${ETC_FOLDER_VSFTPD}/vsftpd.conf
 LOG_FILE_VSFTPD=/var/log/vsftpd.log
@@ -38,28 +25,6 @@ LOG_FILE_VSFTPD=/var/log/vsftpd.log
 echo "[EVN] ETC_FOLDER_VSFTPD=${ETC_FOLDER_VSFTPD}"
 echo "[EVN] CONF_FILE_VSFTPD=${CONF_FILE_VSFTPD}"
 echo "[EVN] LOG_FILE_VSFTPD=${LOG_FILE_VSFTPD}"
-
-
-
-# ************************
-#  CONFIG LOAD FILE MODE
-# ************************
-
-echo
-echo "*** CONFIG LOAD FILE MODE ***"
-
-# Define load file mode (Default : single)
-LOAD_FILE_MODE=${LOAD_FILE_MODE:-single}
-
-if [[ "$LOAD_FILE_MODE" =~ ^(single|combinated)$ ]]; then
-    echo "* Valid LOAD_FILE_MODE -> $LOAD_FILE_MODE"
-else
-    echo "ERROR : $LOAD_FILE_MODE is not a supported load file mode (single or combinado)"
-    exit 1
-fi
-
-echo "[EVN] LOAD_FILE_MODE=${LOAD_FILE_MODE}"
-
 
 
 # *****************
@@ -300,37 +265,39 @@ else
 
     rm ${ETC_FOLDER_VSFTPD}/virtual_users.txt
 
+    
     #echo "auth required pam_mysql.so user=mysqluser passwd=mysqlpass host=rdshost.yourcompany.com db=rdsftpauthdb table=accounts usercolumn=username passwdcolumn=passwd crypt=2" >> /etc/pam.d/vsftpd
     #echo "account required pam_mysql.so user=mysqluser passwd=mysqlpass host=rdshost.yourcompany.com db=rdsftpauthdb table=accounts usercolumn=username passwdcolumn=passwd crypt=2" >> /etc/pam.d/vsftpd
 
 fi
 
-if [ "$USER_MODE" = "combinated" ]; then
 
-    echo
-    echo "*** BUILD vsftpd.conf ***"
 
-    # Add base file section
-    echo "" >> $CONF_FILE_VSFTPD
-    echo "# **************** " >> $CONF_FILE_VSFTPD
-    echo "# CONFIG BASE FILE " >> $CONF_FILE_VSFTPD
-    echo "# **************** " >> $CONF_FILE_VSFTPD
-    echo "" >> $CONF_FILE_VSFTPD
+echo
+echo "*** BUILD vsftpd.conf ***"
 
-    more ${ETC_FOLDER_VSFTPD}/vsftpd-base.conf >> $CONF_FILE_VSFTPD
-    echo "[CONF] Append ${ETC_FOLDER_VSFTPD}/vsftpd-base.conf >> ${CONF_FILE_VSFTPD}" 
+rm $CONF_FILE_VSFTPD
 
-    # Add FTP mode file section
-    echo "" >> $CONF_FILE_VSFTPD
-    echo "# ***************************** " >> $CONF_FILE_VSFTPD
-    echo "# CONFIG FTP mode -> ${FTP_MODE}" >> $CONF_FILE_VSFTPD
-    echo "# ***************************** " >> $CONF_FILE_VSFTPD
-    echo "" >> $CONF_FILE_VSFTPD
+# Add base file section
+echo "" >> $CONF_FILE_VSFTPD
+echo "# **************** " >> $CONF_FILE_VSFTPD
+echo "# CONFIG BASE FILE " >> $CONF_FILE_VSFTPD
+echo "# **************** " >> $CONF_FILE_VSFTPD
+echo "" >> $CONF_FILE_VSFTPD
 
-    more ${ETC_FOLDER_VSFTPD}/vsftpd-${FTP_MODE}.conf >> $CONF_FILE_VSFTPD
-    echo "[CONF] Append ${ETC_FOLDER_VSFTPD}/vsftpd-${FTP_MODE}.conf >> ${CONF_FILE_VSFTPD}" 
+more ${ETC_FOLDER_VSFTPD}/vsftpd-base.conf >> $CONF_FILE_VSFTPD
+echo "[CONF] Append ${ETC_FOLDER_VSFTPD}/vsftpd-base.conf >> ${CONF_FILE_VSFTPD}" 
 
-fi
+# Add FTP mode file section
+echo "" >> $CONF_FILE_VSFTPD
+echo "# ***************************** " >> $CONF_FILE_VSFTPD
+echo "# CONFIG FTP mode -> ${FTP_MODE}" >> $CONF_FILE_VSFTPD
+echo "# ***************************** " >> $CONF_FILE_VSFTPD
+echo "" >> $CONF_FILE_VSFTPD
+
+more ${ETC_FOLDER_VSFTPD}/vsftpd-${FTP_MODE}.conf >> $CONF_FILE_VSFTPD
+echo "[CONF] Append ${ETC_FOLDER_VSFTPD}/vsftpd-${FTP_MODE}.conf >> ${CONF_FILE_VSFTPD}" 
+
 
 
 echo
@@ -401,7 +368,7 @@ if [ "$USER_MODE" = "virtual" ]; then
     echo "" >> $CONF_FILE_VSFTPD
     echo "# Virtual User Mode" >> $CONF_FILE_VSFTPD
     echo "pam_service_name=vsftpd_virtual" >> $CONF_FILE_VSFTPD # PAM file name
-    #echo "virtual_use_local_privs=YES" >> $CONF_FILE_VSFTPD # Virtual users will use the same permissions as anonymous
+    echo "virtual_use_local_privs=YES" >> $CONF_FILE_VSFTPD # Virtual users will use the same permissions as anonymous
     echo "user_sub_token=\$USER" >> $CONF_FILE_VSFTPD
     echo "local_root=/home/vsftpd/\$USER" >> $CONF_FILE_VSFTPD
     #echo "guest_username=virtual" >> $CONF_FILE_VSFTPD

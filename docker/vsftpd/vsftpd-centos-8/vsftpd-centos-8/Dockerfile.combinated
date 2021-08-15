@@ -1,0 +1,34 @@
+FROM centos:8
+
+ARG USER_ID=14
+ARG GROUP_ID=50
+
+RUN yum -y update \
+	&& yum clean all \
+	&& yum install -y vsftpd iproute \
+	&& yum clean all
+
+RUN usermod -u ${USER_ID} ftp
+RUN groupmod -g ${GROUP_ID} ftp
+
+
+#RUN openssl req -x509 -nodes -days 7300 \
+#            -newkey rsa:2048 -keyout /etc/vsftpd/vsftpd.pem -out /etc/vsftpd/vsftpd.pem \
+#            -subj "/C=FR/O=ACME company/CN=acme.org"
+
+RUN mkdir -p /home/vsftpd/
+RUN chown -R ftp:ftp /home/vsftpd/
+
+# Mode Load File Mode : Combinated
+COPY ./config/combinated/vsftpd-base.conf /etc/vsftpd/vsftpd-base.conf
+COPY ./config/combinated/vsftpd-ftp.conf /etc/vsftpd/vsftpd-ftp.conf
+COPY ./config/combinated/vsftpd-ftps.conf /etc/vsftpd/vsftpd-ftps.conf
+COPY ./config/combinated/vsftpd-ftps_implicit.conf /etc/vsftpd/vsftpd-ftps_implicit.conf
+COPY ./config/combinated/vsftpd-ftps_tls.conf /etc/vsftpd/vsftpd-ftps_tls.conf
+
+COPY ./config/virtual/vsftpd_virtual_file /etc/pam.d/vsftpd_virtual
+
+COPY ./config/run-vsftpd.sh /usr/sbin/
+RUN chmod +x /usr/sbin/run-vsftpd.sh
+
+CMD ["/usr/sbin/run-vsftpd.sh"]

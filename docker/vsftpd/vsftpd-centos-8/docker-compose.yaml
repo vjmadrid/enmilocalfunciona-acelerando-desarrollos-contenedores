@@ -2,22 +2,40 @@ version: '3.7'
 
 services:
   
-  vsftpd:
+  ftp:
     build: 
       context: ./vsftpd-centos-8
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.single
       args:
         USER_ID: 1000
         GROUP_ID: 1000
     environment:
+        DEBUG: 'false'
+        # Use LOAD_FILE_MODE : single or combinated
+        #   * Rembember change dockerfile
+        LOAD_FILE_MODE: 'single'
+        # Use FTP_MODE : ftp, ftps, ftps_implicit or ftps_tls
+        FTP_MODE: 'ftp'
         FTP_USER: 'user'
         FTP_PASS: 'user'
-        ANONYMOUS_ACCESS: '*Boolean*'
+        #FTP_PASS_HASH: '*Hash*'
+        # Use USER_MODE : basic or virtual
+        USER_MODE: 'virtual'
+        ANONYMOUS_ACCESS: 'false'
+        PASV_ENABLE: 'YES'
+        PASV_ADDRESS: ''
+        PASV_ADDRESS_INTERFACE: 'eth0'
+        PASV_ADDR_RESOLVE: 'NO'
+        PASV_MIN_PORT: '21100'
+        PASV_MAX_PORT: '21110'
         LOG_STDOUT: 'true'
-        CUSTOM_PASSIVE_ADDRESS: 'localhost'
     volumes:
       - ./vsftpd-centos-8-vol/home:/home/vsftpd
-      - ./vsftpd-centos-8-vol/logs:/var/log/vsftpd
+      - ./vsftpd-centos-8-vol/guest:/guest/vsftpd
+      - ./vsftpd-centos-8-vol/logs:/var/log/
+      - ./vsftpd-centos-8-vol/logs-ftp:/var/log/vsftpd
+      - ./vsftpd-centos-8-vol/private:/etc/vsftpd/private
+      - ./vsftpd-centos-8-vol/tmp:/tmp
     ports:
       - "0.0.0.0:20:20"
       - "0.0.0.0:21:21"

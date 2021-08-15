@@ -5,14 +5,17 @@ services:
   ftp:
     build: 
       context: ./vsftpd-alpine-3.9.4
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.combinated
       args:
         USER_ID: 1000
         GROUP_ID: 1000
     environment:
         DEBUG: 'false'
+        # Use LOAD_FILE_MODE : single or combinated
+        #   * Rembember change dockerfile
+        LOAD_FILE_MODE: 'combinated'
         # Use FTP_MODE : ftp, ftps, ftps_implicit or ftps_tls
-        FTP_MODE: 'ftps'
+        FTP_MODE: 'ftp'
         FTP_USER: 'user'
         FTP_PASS: 'user'
         #FTP_PASS_HASH: '*Hash*'
@@ -32,6 +35,7 @@ services:
       - ./vsftpd-alpine-3.9.4-vol/logs:/var/log/
       - ./vsftpd-alpine-3.9.4-vol/logs-ftp:/var/log/vsftpd
       - ./vsftpd-alpine-3.9.4-vol/private:/etc/vsftpd/private
+      - ./vsftpd-alpine-3.9.4-vol/tmp:/tmp
     ports:
       - "0.0.0.0:20:20"
       - "0.0.0.0:21:21"

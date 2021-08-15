@@ -15,11 +15,8 @@ RUN apk update \
 RUN mkdir -p /home/vsftpd/
 RUN chown -R ftp:ftp /home/vsftpd/
 
-COPY ./config/vsftpd-base.conf /etc/vsftpd/vsftpd-base.conf
-COPY ./config/vsftpd-ftp.conf /etc/vsftpd/vsftpd-ftp.conf
-COPY ./config/vsftpd-ftps.conf /etc/vsftpd/vsftpd-ftps.conf
-COPY ./config/vsftpd-ftps_implicit.conf /etc/vsftpd/vsftpd-ftps_implicit.conf
-COPY ./config/vsftpd-ftps_tls.conf /etc/vsftpd/vsftpd-ftps_tls.conf
+# Mode Load File Mode : Single
+COPY ./config/single/vsftpd.conf /etc/vsftpd/vsftpd.conf
 
 COPY ./config/virtual/vsftpd_virtual_file /etc/pam.d/vsftpd_virtual
 

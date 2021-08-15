@@ -38,6 +38,8 @@ local.properties
 output/
 
 docker/vsftpd/vsftpd-alpine-3.9.4/vsftpd-alpine-3.9.4-vol/
+docker/vsftpd/vsftpd-centos-8/vsftpd-centos-8-vol/
+
 custom-mysql-5.7/
 custom-postgres-11/
 
