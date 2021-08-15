@@ -41,7 +41,7 @@ else
     exit 1
 fi
 
-if [[ "$FTP_MODE" == "ftps" ]] && [ ! -e ${ETC_FOLDER_VSFTPD}/private/vsftpd.pem ] 
+if [[ "$FTP_MODE" == *"ftps"* ]] && [ ! -e "${ETC_FOLDER_VSFTPD}/private/vsftpd.pem" ] 
 then
     echo "* Generating self-signed certificate"
     mkdir -p ${ETC_FOLDER_VSFTPD}/private
@@ -270,9 +270,6 @@ else
     #echo "auth required pam_mysql.so user=mysqluser passwd=mysqlpass host=rdshost.yourcompany.com db=rdsftpauthdb table=accounts usercolumn=username passwdcolumn=passwd crypt=2" >> /etc/pam.d/vsftpd
     #echo "account required pam_mysql.so user=mysqluser passwd=mysqlpass host=rdshost.yourcompany.com db=rdsftpauthdb table=accounts usercolumn=username passwdcolumn=passwd crypt=2" >> /etc/pam.d/vsftpd
 
-    
-
-
 fi
 
 
@@ -437,9 +434,9 @@ fi
 
 
 # Show CONF_FILE_VSFTPD result
-#echo "***********************************************"
-#cat $CONF_FILE_VSFTPD
-#echo "***********************************************"
+echo "***********************************************"
+cat $CONF_FILE_VSFTPD
+echo "***********************************************"
 
 
 
