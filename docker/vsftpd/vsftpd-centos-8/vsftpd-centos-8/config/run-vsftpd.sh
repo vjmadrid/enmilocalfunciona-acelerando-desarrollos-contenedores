@@ -260,16 +260,23 @@ echo
 echo "[CONF] Configure USER_MODE : ${USER_MODE}"
 
 if [ "$USER_MODE" = "basic" ]; then
-    
-	# Add the FTP_USER, change his password and declare him as the owner of his home folder and all subfolders
-    addgroup -g 433 -S $FTP_USER
-    adduser -u 431 -D -G $FTP_USER -h /home/vsftpd/$FTP_USER -s /bin/false  $FTP_USER
-    echo "[CONF] Created FTP user ${FTP_USER} -> /home/vsftpd/${FTP_USER}"
 
-    echo "$FTP_USER:$FTP_PASS" | /usr/sbin/chpasswd 2> /dev/null
+    adduser "${FTP_USER}"
 
+    echo "${FTP_PASS}" | passwd "${FTP_USER}" --stdin
+
+    #mkdir /home/vsftpd/$FTP_USER
+	#echo "[CONF] Created FTP user ${FTP_USER} -> /home/vsftpd/${FTP_USER}"
+
+    mkdir -p /home/vsftpd/$FTP_USER/upload
+
+    chmod 550 /home/vsftpd/$FTP_USER
+    chmod -R 750 /home/vsftpd/$FTP_USER/upload
     chown -R $FTP_USER:$FTP_USER /home/vsftpd/$FTP_USER
     echo "[CONF] Set chown for '${FTP_USER}' user -> /home/vsftpd/${FTP_USER}"
+
+    #bash -c "echo ${FTP_USER} >> /etc/vsftpd/user_list"
+    echo "${FTP_USER}" | tee -a /etc/vsftpd/user_list
 else
     PAM_MODULE_VSFTPD=/etc/pam.d/vsftpd_virtual
     echo "* Set PAM_MODULE_VSFTPD var -> ${PAM_MODULE_VSFTPD}"
@@ -280,17 +287,12 @@ else
     #echo "auth required pam_userdb.so crypt=hash db=${ETC_FOLDER_VSFTPD}/virtual_users" > $PAM_MODULE_VSFTPD
     #echo "account required pam_userdb.so crypt=hash db=${ETC_FOLDER_VSFTPD}/virtual_users" >> $PAM_MODULE_VSFTPD
 
-    # Create home dir and update vsftpd user db
-    mkdir -p "/home/vsftpd/${FTP_USER}"
-
-    chown -R ftp:ftp /home/vsftpd/ || \
-        { echo "No update /home/vsftpd/"; exit 1; }
     
-    echo "* Created home directory for user ${FTP_USER} -> /home/vsftpd/${FTP_USER}"
-
     # Add new user
     echo -e "${FTP_USER}\n${FTP_PASS}" > ${ETC_FOLDER_VSFTPD}/virtual_users.txt
     echo "* Updated ${ETC_FOLDER_VSFTPD}/virtual_users.txt with user :: [${FTP_USER}]"
+
+    cat ${ETC_FOLDER_VSFTPD}/virtual_users.txt
 
     # Update vsftpd database with the new user
     /usr/bin/db_load -T -t hash -f ${ETC_FOLDER_VSFTPD}/virtual_users.txt ${ETC_FOLDER_VSFTPD}/virtual_users.db || \
@@ -299,6 +301,15 @@ else
     echo "* Updated vsftpd database -> load with ${ETC_FOLDER_VSFTPD}/virtual_users.txt"
 
     rm ${ETC_FOLDER_VSFTPD}/virtual_users.txt
+
+    # Create home dir and update vsftpd user db
+    mkdir -p "/home/vsftpd/${FTP_USER}"
+
+    chown -R ftp:ftp /home/vsftpd/ || \
+        { echo "No update /home/vsftpd/"; exit 1; }
+    
+    echo "* Created home directory for user ${FTP_USER} -> /home/vsftpd/${FTP_USER}"
+
 
     #echo "auth required pam_mysql.so user=mysqluser passwd=mysqlpass host=rdshost.yourcompany.com db=rdsftpauthdb table=accounts usercolumn=username passwdcolumn=passwd crypt=2" >> /etc/pam.d/vsftpd
     #echo "account required pam_mysql.so user=mysqluser passwd=mysqlpass host=rdshost.yourcompany.com db=rdsftpauthdb table=accounts usercolumn=username passwdcolumn=passwd crypt=2" >> /etc/pam.d/vsftpd
@@ -366,13 +377,13 @@ fi
 # ************
 # Active mode
 # ************
-echo " * Prepare Active Mode"
+#echo " * Prepare Active Mode"
 
-echo "" >> $CONF_FILE_VSFTPD
-echo "# Active Mode" >> $CONF_FILE_VSFTPD
-echo "port_enable=YES" >> $CONF_FILE_VSFTPD
-echo "connect_from_port_20=YES" >> $CONF_FILE_VSFTPD
-echo "ftp_data_port=20" >> $CONF_FILE_VSFTPD
+#echo "" >> $CONF_FILE_VSFTPD
+#echo "# Active Mode" >> $CONF_FILE_VSFTPD
+#echo "port_enable=YES" >> $CONF_FILE_VSFTPD
+#echo "connect_from_port_20=YES" >> $CONF_FILE_VSFTPD
+#echo "ftp_data_port=20" >> $CONF_FILE_VSFTPD
 
 
 # ************
@@ -409,7 +420,7 @@ if [ "$USER_MODE" = "virtual" ]; then
     
     
     # Change property by default -> if exist 
-    sed -i "s|guest_enable=NO|guest_enable=YES|g" $CONF_FILE_VSFTPD # Enable virtual users
+    #sed -i "s|guest_enable=NO|guest_enable=YES|g" $CONF_FILE_VSFTPD # Enable virtual users
     
 fi
 
@@ -417,25 +428,25 @@ fi
 # *******
 # Logging
 # *******
-echo " * Add Logging"
+#echo " * Add Logging"
 
-echo "" >> $CONF_FILE_VSFTPD
-echo "# Logging" >> $CONF_FILE_VSFTPD
+#echo "" >> $CONF_FILE_VSFTPD
+#echo "# Logging" >> $CONF_FILE_VSFTPD
 
-# The target log file can be vsftpd_log_file or xferlog_file.
-# This depends on setting xferlog_std_format parameter
-echo "xferlog_enable=YES" >> $CONF_FILE_VSFTPD
+## The target log file can be vsftpd_log_file or xferlog_file.
+## This depends on setting xferlog_std_format parameter
+#echo "xferlog_enable=YES" >> $CONF_FILE_VSFTPD
 
-# If you want, you can have your log file in standard ftpd xferlog format.
-# Note that the default log file location is /var/log/xferlog in this case.
-echo "xferlog_std_format=YES" >> $CONF_FILE_VSFTPD
+## If you want, you can have your log file in standard ftpd xferlog format.
+## Note that the default log file location is /var/log/xferlog in this case.
+#echo "xferlog_std_format=YES" >> $CONF_FILE_VSFTPD
 
-# The name of log file when xferlog_enable=YES and xferlog_std_format=YES
-# WARNING - changing this filename affects /etc/logrotate.d/vsftpd.log
-#echo "xferlog_file=/var/log/vsftpd/vsftpd.log" >> $CONF_FILE_VSFTPD
-# #echo "xferlog_file=/dev/stdout" >> $CONF_FILE_VSFTPD
-echo "vsftpd_log_file=/var/log/vsftpd.log" >> $CONF_FILE_VSFTPD
-echo "log_ftp_protocol=YES" >> $CONF_FILE_VSFTPD
+## The name of log file when xferlog_enable=YES and xferlog_std_format=YES
+## WARNING - changing this filename affects /etc/logrotate.d/vsftpd.log
+##echo "xferlog_file=/var/log/vsftpd/vsftpd.log" >> $CONF_FILE_VSFTPD
+## #echo "xferlog_file=/dev/stdout" >> $CONF_FILE_VSFTPD
+#echo "vsftpd_log_file=/var/log/vsftpd.log" >> $CONF_FILE_VSFTPD
+#echo "log_ftp_protocol=YES" >> $CONF_FILE_VSFTPD
 
 #echo "syslog_enable=NO" >> $CONF_FILE_VSFTPD
 #echo "dual_log_enable=YES" >> $CONF_FILE_VSFTPD
@@ -449,13 +460,13 @@ if [ "$LOG_STDOUT" == "false" ]; then
 else
 	echo "* Logging to STDOUT Enabled"
 
-    mkdir -p /var/log/vsftpd
+#    mkdir -p /var/log/vsftpd
 
     #Create
-    echo > /var/log/vsftpd/vsftpd.log
+#    echo > /var/log/vsftpd/vsftpd.log
 
-    export LOG_FILE=`grep vsftpd_log_file= $CONF_FILE_VSFTPD|cut -d= -f2`
-    echo "[EVN] LOG_FILE=${LOG_FILE}"
+#    export LOG_FILE=`grep vsftpd_log_file= $CONF_FILE_VSFTPD|cut -d= -f2`
+#    echo "[EVN] LOG_FILE=${LOG_FILE}"
     
 	#touch ${LOG_FILE}
     #tail -f ${LOG_FILE} | /dev/stdout &

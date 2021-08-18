@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  
+  centos:
+    build: 
+      context: ./
+      dockerfile: Dockerfile.prepare
+      args:
+        USER_ID: 1000
+        GROUP_ID: 1000
+    environment:
+        DEBUG: 'false'
+    volumes:
+      - ./centos-8-vol/logs:/var/log/
+      - ./centos-8-vol/tmp:/tmp
+      - ./centos-8-vol/etc:/etc
+
+

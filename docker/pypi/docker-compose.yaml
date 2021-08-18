@@ -1,0 +1,15 @@
+version: '3.7'
+
+services:
+
+   pypiserver:
+      build: ./
+      container_name: pypiserver
+      hostname: pypiserver
+      restart: always
+      environment:
+         DEBUG: 'false'
+      volumes:
+         - ./pypiserver-vol/packages:/srv/packages:ro
+      ports:
+         - 8080:8080

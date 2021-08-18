@@ -1,0 +1,19 @@
+FROM centos:8
+
+#ARG USER_ID=14
+#ARG GROUP_ID=50
+
+RUN yum -y update \
+	&& yum clean all \
+	&& yum install -y vsftpd passwd iproute \
+	&& yum clean all
+
+#COPY ./config/bootstrap.sh /usr/sbin/
+#RUN chmod +x /usr/sbin/bootstrap.sh
+
+# CMD ["/usr/sbin/bootstrap.sh", "-d"]
+#ENTRYPOINT ["/usr/sbin/bootstrap.sh", "-d"]
+
+#CMD ["/bin/bash"]
+
+CMD ["/usr/sbin/init"]

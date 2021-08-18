@@ -5,7 +5,7 @@ services:
   ftp:
     build: 
       context: ./vsftpd-centos-8
-      dockerfile: Dockerfile.single
+      dockerfile: Dockerfile.prepare
       args:
         USER_ID: 1000
         GROUP_ID: 1000
@@ -15,12 +15,12 @@ services:
         #   * Rembember change dockerfile
         LOAD_FILE_MODE: 'single'
         # Use FTP_MODE : ftp, ftps, ftps_implicit or ftps_tls
-        FTP_MODE: 'ftp'
+        FTP_MODE: 'ftps'
         FTP_USER: 'user'
         FTP_PASS: 'user'
         #FTP_PASS_HASH: '*Hash*'
         # Use USER_MODE : basic or virtual
-        USER_MODE: 'virtual'
+        USER_MODE: 'basic'
         ANONYMOUS_ACCESS: 'false'
         PASV_ENABLE: 'YES'
         PASV_ADDRESS: ''

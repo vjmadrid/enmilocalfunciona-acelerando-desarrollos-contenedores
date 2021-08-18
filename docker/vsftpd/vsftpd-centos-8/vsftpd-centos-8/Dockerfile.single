@@ -5,7 +5,7 @@ ARG GROUP_ID=50
 
 RUN yum -y update \
 	&& yum clean all \
-	&& yum install -y vsftpd iproute \
+	&& yum install -y vsftpd passwd iproute \
 	&& yum clean all
 
 RUN usermod -u ${USER_ID} ftp
@@ -15,15 +15,18 @@ RUN groupmod -g ${GROUP_ID} ftp
 #            -newkey rsa:2048 -keyout /etc/vsftpd/vsftpd.pem -out /etc/vsftpd/vsftpd.pem \
 #            -subj "/C=FR/O=ACME company/CN=acme.org"
 
-RUN mkdir -p /home/vsftpd/
-RUN chown -R ftp:ftp /home/vsftpd/
-
 # Mode Load File Mode : Single
-COPY ./config/single/vsftpd.conf /etc/vsftpd/
+COPY ./config/single/vsftpd-option4.conf /etc/vsftpd/vsftpd.conf
 
-COPY ./config/virtual/vsftpd_virtual_file /etc/pam.d/vsftpd_virtual
+# Mode Virutal User
+COPY ./config/virtual/vsftpd_virtual_db /etc/pam.d/vsftpd_virtual
 
+# Load Config
 COPY ./config/run-vsftpd.sh /usr/sbin/
 RUN chmod +x /usr/sbin/run-vsftpd.sh
+
+# Prepare
+RUN mkdir -p /home/vsftpd/
+RUN chown -R ftp:ftp /home/vsftpd/
 
 CMD ["/usr/sbin/run-vsftpd.sh"]
