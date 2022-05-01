@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+
+   registry:
+      image: registry:2.8.1
+      container_name: registry
+      volumes:
+         - ./vol-registry:/var/lib/registry 
+      restart: always
+      ports:
+         - "1000:5000"

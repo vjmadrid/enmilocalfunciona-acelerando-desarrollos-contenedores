@@ -6,7 +6,6 @@ set -e
 
 #[[ "${DEBUG}" == "true" ]] && set -o xtrace
 
-
 # ***********************
 #  CONFIG GENERAL
 # ***********************
@@ -18,6 +17,14 @@ echo "* Linux version used"
 echo
 
 cat /etc/*release
+
+
+#mkdir /root/.ssh/
+#echo "${SSH_PRIVATE_KEY}" > /root/.ssh/id_rsa
+#chmod 600 /root/.ssh/id_rsa
+
+#RUN touch /root/.ssh/known_hosts
+#RUN ssh-keyscan XXX >> /root/.ssh/known_hosts
 
 
 # ***********************
@@ -61,6 +68,14 @@ echo
 
 pip3 -V
 
+# ************************
+#  CONFIG VIRTUALENV
+# ************************
+
+echo
+echo "*** CONFIG VIRTUALENV ***"
+
+
 echo
 echo "* Install virtualenv"
 echo
@@ -69,6 +84,10 @@ pip3 install virtualenv
 
 which virtualenv
 
+echo
+echo "* Create Python packages folder"
+echo
+
 mkdir ~/python-environment
 cd ~/python-environment
 
@@ -76,17 +95,28 @@ echo
 echo "* Create virtualenv: venv"
 echo
 
-virtualenv -p python3 venv
+#virtualenv -p python3 venv
+virtualenv venv
 
 source venv/bin/activate
 
 /root/python-environment/venv/bin/python -m pip install --upgrade pip
 
+
+# ************************
+#  CONFIG OTHER DEPENDENCIES
+# ************************
+
 echo
-echo "* Install other dependencies"
+echo "*** CONFIG OTHER DEPENDENCIES ***"
+
+OTHER_DEPENDENCIES='setuptools wheel'
+
+echo
+echo "* Install other dependencies : ${OTHER_DEPENDENCIES}"
 echo
 
-pip3 install setuptools wheel
+pip3 install $OTHER_DEPENDENCIES
 
 
 # ************************

@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+
+   pypi-server:
+      image: pypiserver/pypiserver:latest
+      container_name: pypi-server
+      hostname: pypiserver
+      restart: always
+      volumes:
+         - ./pypiserver-server-vol/packages:/data/packages:ro
+      ports:
+         - 8080:8080
+      command: -P . -a . /data/packages

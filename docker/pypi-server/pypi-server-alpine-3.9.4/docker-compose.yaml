@@ -3,13 +3,13 @@ version: '3.7'
 services:
 
    pypiserver:
-      build: ./
+      build: ./pypi
       container_name: pypiserver
       hostname: pypiserver
       restart: always
       environment:
          DEBUG: 'false'
       volumes:
-         - ./pypiserver-vol/packages:/srv/packages:ro
+         - ./pypiserver-server-alpine-3.9.4-vol/packages:/srv/packages:ro
       ports:
          - 8080:8080
