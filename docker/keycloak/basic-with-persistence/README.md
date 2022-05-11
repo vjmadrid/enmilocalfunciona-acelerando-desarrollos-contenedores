@@ -1,16 +1,14 @@
 
-# keycloak
+# keycloak-with-persistence
 
-Este proyecto representa una estructura de recursos utilizados para el uso de **Keycloak** con **Docker**
+Este proyecto representa una estructura de recursos utilizados para el uso de **Keycloak** con **Docker** y persistencia
+en base de datos **Postgresql**
 
 >**Importante**
 >
->En este caso con funcionamiento será modo "standalone" lo que significa que usará persistencia interna, lo que  
->implica que en cada arranque se pierda lo que se ha configurado.
->
 >SE INICIA SIN CONFIGURACIONES EXTRA, UNICAMENTE TENDRÁ EL USUARIO ADMIN
-
-
+> 
+>Posteriomente se persitirá todo lo que se haga
 
 
 
@@ -19,6 +17,7 @@ Este proyecto representa una estructura de recursos utilizados para el uso de **
 * [Docker](https://www.docker.com/) - Tecnología de Contenedores/Containers
 * [Docker Hub](https://hub.docker.com/) - Repositorio de Docker Público
 * [Keycloak](https://www.keycloak.org/) - Herramienta IAM / IdP
+* [Postgresql](https://www.postgresql.org/) - Base de datos relacional
 
 Dependencias con Proyectos de Arquitectura
 
@@ -52,19 +51,45 @@ Configuración del fichero "docker-compose.yaml"
 version: '3'
 services:
 
+  db:
+    #image: postgres
+    image: postgres:14.2
+    environment: 
+      POSTGRES_DB: keycloakdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db:/var/lib/postgresql/data
+
   keycloak:
     #image: jboss/keycloak
     image: jboss/keycloak:16.1.0
     environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: db
+      DB_DATABASE: keycloakdb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
       KEYCLOAK_LOGLEVEL: DEBUG
       ROOT_LOGLEVEL: DEBUG
     ports:
       - '8083:8080'
+    depends_on:
+      - db
+
+volumes:
+  db:
+    driver: local
 ```
 
-En este fichero se establece el constructor de la imagen que se utilizará (versión específica o la última disponible), se establecerán una serie de variables de entorno necesarias para su ejecución.
+En este fichero se establece el constructor de la imagen que se utilizará para Keycloak (versión específica o la última disponible), se establecerán una serie de variables de entorno necesarias para su ejecución.
+
+Además se establece el constructor de la imagen que se utilizará para Postgres, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
+
 
 Pasos a seguir
 

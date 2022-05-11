@@ -2,7 +2,8 @@ version: '3'
 services:
 
   db:
-    image: postgres
+    #image: postgres
+    image: postgres:14.2
     environment: 
       POSTGRES_DB: keycloakdb
       POSTGRES_USER: postgres
@@ -13,7 +14,8 @@ services:
       - ./db:/var/lib/postgresql/data
 
   keycloak:
-    image: jboss/keycloak
+    #image: jboss/keycloak
+    image: jboss/keycloak:16.1.0
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: db
@@ -22,8 +24,8 @@ services:
       DB_PASSWORD: postgres
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
-      KEYCLOAK_LOGLEVEL: DEBUG
-      ROOT_LOGLEVEL: DEBUG
+      #KEYCLOAK_LOGLEVEL: DEBUG
+      #ROOT_LOGLEVEL: DEBUG
     ports:
       - '8083:8080'
     depends_on:

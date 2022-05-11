@@ -3,13 +3,14 @@ services:
 
   keycloak:
     image: jboss/keycloak
+    #image: jboss/keycloak:16.1.0
     environment:
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
       KEYCLOAK_LOGLEVEL: DEBUG
       ROOT_LOGLEVEL: DEBUG
-      KEYCLOAK_IMPORT: ./config/realm-export.json
+      KEYCLOAK_IMPORT: /tmp/realm-export.json
     ports:
       - '8083:8080'
     volumes:
-      - ./vol-keycloak/realm-export.json:/config/realm-export.json
+      - ./config/realm-export.json:/tmp/realm-export.json
