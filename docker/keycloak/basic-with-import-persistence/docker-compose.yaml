@@ -1,0 +1,42 @@
+version: '3'
+services:
+
+  db:
+    #image: postgres
+    image: postgres:14.2
+    environment: 
+      POSTGRES_DB: keycloakdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db:/var/lib/postgresql/data
+      - ./config/postgres:/docker-entrypoint-initdb.d
+
+  keycloak:
+    #image: jboss/keycloak
+    image: jboss/keycloak:16.1.0
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: db
+      DB_DATABASE: keycloakdb
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: password
+      #KEYCLOAK_LOGLEVEL: DEBUG
+      #ROOT_LOGLEVEL: DEBUG
+      KEYCLOAK_IMPORT: /tmp/realm-export.json
+    ports:
+      - '8083:8080'
+    volumes:
+      - ./config/keycloak/realm-export.json:/tmp/realm-export.json
+    command: ["-Dkeycloak.profile.feature.upload_scripts=enabled"]
+    depends_on:
+      - db
+
+volumes:
+  db:
+    driver: local
+

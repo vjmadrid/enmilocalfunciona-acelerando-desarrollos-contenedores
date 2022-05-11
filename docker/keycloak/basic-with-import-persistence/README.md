@@ -1,12 +1,13 @@
 
-# keycloak-with-persistence
+# keycloak-with-import-persistence
 
-Este proyecto representa una estructura de recursos utilizados para el uso de **Keycloak** con **Docker** y persistencia
+Este proyecto representa una estructura de recursos utilizados para el uso de **Keycloak** con **Docker**, con la importación
+de una configuración previa y con persistencia
 en base de datos **Postgresql**
 
 >**Importante**
 >
->SE INICIA SIN CONFIGURACIONES EXTRA, UNICAMENTE TENDRÁ EL USUARIO ADMIN
+>SE INICIA CON LA CONFIGURACION ESTABLECIDA EN EL FICHERO, UNICAMENTE TENDRÁ EL USUARIO ADMIN
 > 
 >Posteriomente se persitirá todo lo que se haga
 
@@ -62,6 +63,7 @@ services:
       - '5432:5432'
     volumes:
       - ./db:/var/lib/postgresql/data
+      - ./config/postgres:/docker-entrypoint-initdb.d
 
   keycloak:
     #image: jboss/keycloak
@@ -74,10 +76,14 @@ services:
       DB_PASSWORD: postgres
       KEYCLOAK_USER: admin
       KEYCLOAK_PASSWORD: password
-      KEYCLOAK_LOGLEVEL: DEBUG
-      ROOT_LOGLEVEL: DEBUG
+      #KEYCLOAK_LOGLEVEL: DEBUG
+      #ROOT_LOGLEVEL: DEBUG
+      KEYCLOAK_IMPORT: /tmp/realm-export.json
     ports:
       - '8083:8080'
+    volumes:
+      - ./config/keycloak/realm-export.json:/tmp/realm-export.json
+    command: ["-Dkeycloak.profile.feature.upload_scripts=enabled"]
     depends_on:
       - db
 
@@ -89,6 +95,8 @@ volumes:
 En este fichero se establece el constructor de la imagen que se utilizará para Keycloak (versión específica o la última disponible), se establecerán una serie de variables de entorno necesarias para su ejecución.
 
 Se proporciona el fichero que ha sido exportado previamente y que contiene una configuración determinada, dicho fichero será importado por Keycloak en en arranque. Para ello establece un volumen de intercambio entre un fichero en una ruta local y el mismo fichero dentro del contenedor.
+
+Se ha activado un comando de Keycloak para permitir la actualización mediante script
 
 Además se establece el constructor de la imagen que se utilizará para Postgres, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
 
