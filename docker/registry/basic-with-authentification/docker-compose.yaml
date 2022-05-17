@@ -7,8 +7,13 @@ services:
       image: registry:2.8.1
       container_name: registry
       restart: always
+      environment:
+      REGISTRY_AUTH: htpasswd
+      REGISTRY_AUTH_HTPASSWD_REALM: Registry Realm
+      REGISTRY_AUTH_HTPASSWD_PATH: /auth/registry.password
       volumes:
          - ./vol-registry/registry:/var/lib/registry
          #- ./vol-registry/opt:/opt/registry/config.yml
+         - ./auth:/auth
       ports:
          - "1000:5000"

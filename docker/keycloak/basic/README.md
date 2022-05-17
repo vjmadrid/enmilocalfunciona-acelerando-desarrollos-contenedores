@@ -127,7 +127,8 @@ Una vez arrancado el contenedor de Keycloak se puede establecer una configuraci�
 Pasos a seguir:
 
 * Acceder a la plataforma con el usuario admin utilizado (si es necesario)
-* Añadir un realm nuevo desde el desplegable superior de la izquierda que pone "Master"
+* Añadir un realm nuevo desde el desplegable superior de la izquierda 
+  * Por defecto pondrá "Master" (realm proporcionado por defecto)
 * Pulsar sobre el botón "Add realm"
 * Establecer el nombre del realm : **test**
 * Pulsar sobre el botón "Create"
@@ -140,25 +141,42 @@ Pasos a seguir:
 
 
 
-### Creación de un Cliente
+
+### Creación de un cliente (Oauth)
 
 Pasos a seguir:
 
 * Acceder a la plataforma con el usuario admin utilizado (si es necesario)
-* Acceder a la opción "Clients"
+* Seleccionar el realm objetivo -> En nuestro caso el creado anteriormente "test"
+* Acceder a la opción "Clients" del menú lateral izquierdo
 * Pulsar sobre el botón "Create"
 * Establecer el client id : **client-postman**
 * Establecer el client protocol : **openid-connect**
+* Pulsar sobre el botón "Save"
+* Si todo ha ido bien se accedera a la pestaña de "Setting" del cliente que se acaba de crear
+
+**Configuración del cliente**
+
+Pasos a seguir:
+
+* Pulsar sobre la pestaña "Settings" (En caso de que no se haya accedido previamente habrá que acceder primero al cliente)
+* Establecer el client name (opcional)
+* Establecer la client description (opcional)
+* Verificar que el client protocol es "openid-connect" (Para nuestro caso concreto)
 * Establecer el access type : **confidential**
-  * Requiere client id y cliente secret
+  * Significa que requerirá "client id" y "client secret"
+  * Aparecerán unas opciones particulares al seleccionarla
+  * La app cliente requerirá incluir los valores client_id y client_secret  en la solicitud de token de acceso
+* Establecer Valid Redirect URIs : http://localhost:8083/*
+  * Debería ser la URL de la aplicación sobre la que redirigir en caso de utilizar un desarrollo
+* Habilitar la opcion "Service Account Enabled" -> Se podrán copiar "client credentials" y así usarlas en peticiones HTTP
+  * Proporciona el soporte de "Client Credentials Grant" a este cliente
 * Pulsar sobre el botón "Save"
-* En la pestaña "Settings"
-  * Editar las características
-  * Establecer Valid Redirect URIs : http://localhost:8083/*
-    * Debería ser la URL de la aplicación sobre la que redirigir en caso de utilizar un desarrollo
-* Pulsar sobre el botón "Save"
-* En la pestaña "Credentials"
-  * "Apuntar" el Secret
+* Copiar el campo Client ID (por ejemplo en un fichero de texto, ya que luego lo utilizaremos)
+* Pulsar sobre la pestaña "Credentials"
+* Verficar que el campo Cliente Authenticator tien la opcion marcada de "Client Id and Secret"
+* Copiar el valor "Client Secret" (por ejemplo en el mismo fichero que antes)
+
 
 
 
@@ -174,6 +192,14 @@ Pasos a seguir:
 * Establecer el id : **user1**
 * Pulsar sobre el botón "Save"
 * Seleccionar pestaña de "Credentials"
+
+
+**Configuración del Usuario**
+
+Pasos a seguir:
+
+* Pulsar sobre la pestaña "Credentials"
+* Establecer el password : user1
 * Establecer el password : **user1**
 * Confirmar el password
 * Deshabilitar la opción "Temporary"

@@ -9,6 +9,6 @@ services:
       restart: always
       volumes:
          - ./vol-registry/registry:/var/lib/registry
-         #- ./vol-registry/opt:/opt/registry/config.yml
+         - ./vol-registry/opt:/opt/registry/config.yml
       ports:
          - "1000:5000"

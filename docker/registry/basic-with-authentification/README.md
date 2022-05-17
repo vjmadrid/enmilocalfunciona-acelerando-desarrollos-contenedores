@@ -5,17 +5,13 @@ Este proyecto representa una estructura de recursos utilizados para el uso de **
 * **docker-compose.yaml** representa una instalación independiente y básica del **Registry**
 
 
-https://hub.docker.com/_/registry
-https://github.com/docker/distribution-library-image
-https://github.com/distribution/distribution
-https://github.com/docker/docker.github.io/blob/master/registry/deploying.md
 
 
 
 ## Stack Tecnológico
 
 * [Docker](https://www.docker.com/) - Tecnología de Contenedores/Containers
-* [Docker Hub](https://hub.docker.com/) - Repositorio de Docker Publico
+* [Docker Hub](https://hub.docker.com/) - Repositorio de Docker Público
 * [Registry](https://www.mysql.com/) - Docker Registry
 
 Dependencias con Proyectos de Arquitectura
