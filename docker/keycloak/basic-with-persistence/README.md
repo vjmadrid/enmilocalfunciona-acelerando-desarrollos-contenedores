@@ -8,7 +8,7 @@ en base de datos **Postgresql**
 >
 >SE INICIA SIN CONFIGURACIONES EXTRA, UNICAMENTE TENDRÁ EL USUARIO ADMIN
 > 
->Posteriomente se persitirá todo lo que se haga
+>Posteriormente se persistirá todo lo que se haga
 
 
 
@@ -88,7 +88,7 @@ volumes:
 
 En este fichero se establece el constructor de la imagen que se utilizará para Keycloak (versión específica o la última disponible), se establecerán una serie de variables de entorno necesarias para su ejecución.
 
-Se proporciona el fichero que ha sido exportado previamente y que contiene una configuración determinada, dicho fichero será importado por Keycloak en en arranque. Para ello establece un volumen de intercambio entre un fichero en una ruta local y el mismo fichero dentro del contenedor.
+Se proporciona el fichero que ha sido exportado previamente y que contiene una configuración determinada, dicho fichero será importado por Keycloak en el arranque. Para ello establece un volumen de intercambio entre un fichero en una ruta local y el mismo fichero dentro del contenedor.
 
 Además se establece el constructor de la imagen que se utilizará para Postgres, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
 
