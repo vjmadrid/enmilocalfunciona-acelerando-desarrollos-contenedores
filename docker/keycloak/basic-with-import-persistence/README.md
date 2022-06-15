@@ -9,7 +9,7 @@ en base de datos **Postgresql**
 >
 >SE INICIA CON LA CONFIGURACION ESTABLECIDA EN EL FICHERO, UNICAMENTE TENDRÁ EL USUARIO ADMIN
 > 
->Posteriomente se persitirá todo lo que se haga
+>Posteriormente se persistirá todo lo que se haga
 
 
 

@@ -6,8 +6,7 @@ de una configuración previa
 
 >**Importante**
 >
->En este caso con funcionamiento será modo "standalone" lo que significa que usará persistencia interna, lo que  
->implica que en cada arranque se pierda lo que se ha configurado.
+>En este caso con funcionamiento será modo "standalone" lo que significa que usará persistencia interna, lo que implica que en cada arranque se pierda lo que se ha configurado.
 >
 >SE INICIA CON LA CONFIGURACION ESTABLECIDA EN EL FICHERO, UNICAMENTE TENDRÁ EL USUARIO ADMIN
 >
@@ -69,9 +68,9 @@ services:
 
 En este fichero se establece el constructor de la imagen que se utilizará para Keycloak (versión específica o la última disponible), se establecerán una serie de variables de entorno necesarias para su ejecución.
 
-Se proporciona el fichero que ha sido exportado previamente y que contiene una configuración determinada, dicho fichero será importado por Keycloak en en arranque. Para ello establece un volumen de intercambio entre un fichero en una ruta local y el mismo fichero dentro del contenedor.
+Se proporciona el fichero que ha sido exportado previamente y que contiene una configuración determinada, dicho fichero será importado por Keycloak en el arranque. Para ello establece un volumen de intercambio entre un fichero en una ruta local y el mismo fichero dentro del contenedor.
 
-Además se establece el constructor de la imagen que se utilizará para Postgres, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
+Además, se establece el constructor de la imagen que se utilizará para Postgres, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
 
 
 Pasos a seguir
