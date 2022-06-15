@@ -7,6 +7,8 @@ services:
       image: registry:2.8.1
       container_name: registry
       restart: always
+      environment:
+         REGISTRY_STORAGE_DELETE_ENABLED: true
       volumes:
          - ./vol-registry/registry:/var/lib/registry
          #- ./vol-registry/opt:/opt/registry/config.yml
