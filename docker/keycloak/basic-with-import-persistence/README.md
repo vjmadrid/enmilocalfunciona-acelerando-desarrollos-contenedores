@@ -98,7 +98,7 @@ Se proporciona el fichero que ha sido exportado previamente y que contiene una c
 
 Se ha activado un comando de Keycloak para permitir la actualización mediante script
 
-Además se establece el constructor de la imagen que se utilizará para Postgres, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
+Además, se establece el constructor de la imagen que se utilizará para Postgres, se establecerán una serie de variables de entorno necesarias para su ejecución, se definirán una serie de volúmenes y se publicará por el puerto específico de la aplicación
 
 
 Pasos a seguir
