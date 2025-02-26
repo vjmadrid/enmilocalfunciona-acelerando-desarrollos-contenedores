@@ -45,3 +45,9 @@ docker/keycloak/basic-with-import-persistence/db
 custom-mysql-5.7/
 custom-postgres-11/
 
+# Ignore local vars
+.env
+**/.DS_Store
+
+# Docker volumens
+**/example01-n8n-data
