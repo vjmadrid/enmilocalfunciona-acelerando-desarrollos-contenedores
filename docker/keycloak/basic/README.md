@@ -207,7 +207,7 @@ Pasos a seguir:
 * Pulsar sobre el botón "Set Password"
 * Confirmar la ventana modal
 
-Debido a que el sistema de Keycloak está basado en roles por usuario, sería interesante crear un rol y asociarlo a un usuario. En nuestro caso no lo hemos hecho, pero si fuera necesario se realiza de la siguiente manera 
+Debido a que el sistema de Keycloak está basado en roles por usuario, sería interesante crear un rol y asociarlo a un usuario. En nuestro caso no lo hemos hecho, pero si fuera necesario se realiza de la siguiente manera
 
 * Acceder a la opción "Roles"
 * Pulsar sobre el botón "Add user"

@@ -1,0 +1,83 @@
+version: '3'
+services:
+
+  db:
+    image: "postgres:15.2"
+    container_name: db
+    restart: always
+    environment:
+      # *** Settings ***
+      POSTGRES_DB: ${DB_DATABASE}
+      # *** Users ***
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./db-data:/var/lib/postgresql/data:rw
+    networks:
+      - keycloak-network
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:25.0.5
+    container_name: keycloak
+    restart: always
+    command: ["start-dev"]
+    depends_on:
+      - db
+    environment:
+      # *** Settings ***
+      KC_HOSTNAME: localhost
+      KC_HOSTNAME_PORT: 8080
+      # - Enables or disables backchannel communication between servers -> enabled to use propagated logout and token sharing
+      KC_HOSTNAME_STRICT_BACKCHANNEL: true
+      KC_PROXY_MODE: edge
+      KC_METRICS_ENABLED: true
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      # - Enables health endpoints
+      KC_HEALTH_ENABLED: true
+      # - Set the log level
+      KC_LOG_LEVEL: info
+      # *** Database connection: Option 1 ***
+      #DB_VENDOR: ${DB_VENDOR}
+      #DB_ADDR: db
+      #DB_PORT: 5432
+      #DB_SCHEMA: public
+      #DB_DATABASE: ${DB_DATABASE}
+      #DB_USER: ${DB_USER}
+      #DB_PASSWORD: ${DB_PASSWORD}
+      # *** Database connection: Option 2 ***
+      #KC_DB: postgres
+      #KC_DB_URL: jdbc:postgresql://db/${DB_DATABASE}
+      #KC_DB_USERNAME: ${DB_USER}
+      #KC_DB_PASSWORD: ${DB_PASSWORD}
+      # *** Database connection: Option 2 ***
+      KEYCLOAK_DATABASE_NAME: ${DB_DATABASE}
+      KEYCLOAK_DATABASE_USER: ${DB_USER}
+      KEYCLOAK_DATABASE_PASSWORD: ${DB_PASSWORD}
+      KEYCLOAK_DATABASE_HOST: db
+      # *** Users ***
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    ports:
+      # Web interface
+      - '8083:8080'
+      # Web Security
+      - '8443:8443'
+    links:
+      - db
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8083/health/ready"]
+      interval: 15s
+      timeout: 2s
+      retries: 15
+    networks:
+      - keycloak-network
+
+volumes:
+  db-data:
+
+networks:
+  keycloak-network:
+    driver: bridge

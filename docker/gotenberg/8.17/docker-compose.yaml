@@ -1,0 +1,14 @@
+# Use Case: Basic Installation
+services:
+   # Project URL: https://github.com/gotenberg/gotenberg
+   # Docs URL: https://gotenberg.dev/docs/getting-started/introduction
+   gotenberg:
+      image: gotenberg/gotenberg:8.17.1
+      container_name: gotenberg
+      command:
+         # CONFIGURATION
+         - gotenberg
+         - --log-level=debug # Logging levels
+         - --api-timeout=10s
+      ports:
+         - 3000:3000
