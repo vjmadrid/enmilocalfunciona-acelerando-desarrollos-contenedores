@@ -1,11 +1,13 @@
-version: '3.7'
-
+# Use Case: Basic Installation
 services:
+   # Project URL: https://github.com/apache/tomcat
+   # Docs URL: https://tomcat.apache.org/tomcat-8.5-doc/
 
    custom-tomcat-8.5:
       build: ./tomcat-8.5
       container_name: custom-tomcat-8.5
       volumes:
+         # *** App Example ***
          - ./example/acme.war:/usr/local/tomcat/webapps/acme.war
       ports:
          - "8090:8080"

@@ -43,7 +43,6 @@ Define que elementos son necesarios para instalar el software
 Configuración del fichero "docker-compose.yaml"
 
 ```bash
-version: '3.7'
 
 services:
 
