@@ -1,4 +1,4 @@
-# mysql
+# mysql 5.7
 
 Este proyecto representa una estructura de recursos utilizados para el uso de **MySQL** con **Docker**
 
@@ -43,10 +43,10 @@ Define que elementos son necesarios para instalar el software
 Configuración del fichero "docker-compose.yaml"
 
 ```bash
-version: '3.7'
-
+# Use Case: Basic Installation
 services:
-
+   # Project URL: https://github.com/mysql
+   # Docs URL: https://dev.mysql.com/doc/
    custom-mysql-5.7:
       build: ./mysql-5.7
       container_name: custom-mysql-5.7
@@ -56,6 +56,7 @@ services:
          MYSQL_USER: test
          MYSQL_PASSWORD: test
       volumes:
+         # *** MySQL configuration ***
          - ./custom-mysql-5.7/config/my.cnf:/etc/mysql/conf.d/my.cnf
          - ./mysql-5.7/sql-scripts:/docker-entrypoint-initdb.d
       ports:
