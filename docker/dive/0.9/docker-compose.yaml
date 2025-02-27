@@ -1,0 +1,14 @@
+# Use Case: Basic Installation
+services:
+   # Project URL: https://github.com/wagoodman/dive
+   # Docs URL: https://github.com/wagoodman/dive
+
+   dive-0.9:
+      build: ./dive-0.9
+      container_name: dive-0.9
+      environment:
+         DOCKER_API_VERSION: 1.40
+      volumes:
+         # *** General configuration ***
+         - /var/run/docker.sock:/var/run/docker.sock:ro # Access to Docker on host machine
+
