@@ -1,7 +1,7 @@
-version: '3.7'
-
+# Use Case: Basic Installation
 services:
-
+   # Project URL: https://github.com/postgres/postgres
+   # Docs URL: https://www.postgresql.org/docs/
    custom-postgres-11:
       build: ./postgres-11
       container_name: custom-postgres-11
@@ -10,6 +10,6 @@ services:
          POSTGRES_PASSWORD: test
          POSTGRES_DB: acme
       #volumes:
-      #   - ./custom-postgres-11/data/:/var/lib/postgresql/data/  
+      #   - ./custom-postgres-11/data/:/var/lib/postgresql/data/
       ports:
          - 5432:5432

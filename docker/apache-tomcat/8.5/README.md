@@ -84,7 +84,7 @@ En este fichero se establece la versión a utilizar de Tomcat, contiene una seri
 Pasos a seguir
 
 
-1. Localizar el directorio principal del proyecto : <PROJECT_PATH> (/docker/apache-tomcat)
+1. Localizar el directorio principal del proyecto : <PROJECT_PATH> (/docker/apache-tomcat/8.5)
 
 2. Ejecutar el siguiente comando
 

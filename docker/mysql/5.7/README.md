@@ -78,16 +78,16 @@ En este fichero se establece la versión a utilizar y se le indicará los ficher
 Pasos a seguir
 
 
-1. Localizar el directorio principal del proyecto : <PROJECT_PATH> (/docker/mysql)
+1. Localizar el directorio principal del proyecto : <PROJECT_PATH> (/docker/mysql/5.7)
 
 2. Ejecutar el siguiente comando
 
 ```bash
-docker-compose up --build
+docker compose up --build
 
 ó
 
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
 3. Comprobar que la imagen ha sido creada

@@ -1,4 +1,4 @@
-# postgresql
+# postgresql 11
 
 Este proyecto representa una estructura de recursos utilizados para el uso de **Postgresql** con **Docker**
 
@@ -42,10 +42,10 @@ Define que elementos son necesarios para instalar el software
 Configuración del fichero "docker-compose.yaml"
 
 ```bash
-version: '3.7'
-
+# Use Case: Basic Installation
 services:
-
+   # Project URL: https://github.com/postgres/postgres
+   # Docs URL: https://www.postgresql.org/docs/
    custom-postgres-11:
       build: ./postgres-11
       container_name: custom-postgres-11
@@ -54,7 +54,7 @@ services:
          POSTGRES_PASSWORD: test
          POSTGRES_DB: acme
       #volumes:
-      #   - ./custom-postgres-11/data/:/var/lib/postgresql/data/  
+      #   - ./custom-postgres-11/data/:/var/lib/postgresql/data/
       ports:
          - 5432:5432
 ```
@@ -74,16 +74,16 @@ En este fichero se establece la versión a utilizar y se le indicará los ficher
 Pasos a seguir
 
 
-1. Localizar el directorio principal del proyecto : <PROJECT_PATH> (infrastructure-db/docker/postgres)
+1. Localizar el directorio principal del proyecto : <PROJECT_PATH> (/docker/postgres/11)
 
 2. Ejecutar el siguiente comando
 
 ```bash
-docker-compose up --build
+docker compose up --build
 
 ó
 
-docker-compose up --build -d
+docker compose up --build -d
 ```
 
 3. Comprobar que la imagen ha sido creada
