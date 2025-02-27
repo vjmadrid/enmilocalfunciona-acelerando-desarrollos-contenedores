@@ -1,9 +1,9 @@
 version: '3.7'
 
 services:
-  
+
   centos:
-    build: 
+    build:
       context: ./
       dockerfile: Dockerfile.prepare
       args:

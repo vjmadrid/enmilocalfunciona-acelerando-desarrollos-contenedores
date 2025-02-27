@@ -8,7 +8,6 @@ Este repositorio se encarga de servir como estructura de recursos utilizados par
 
 ## Stack Tecnológico
 
-* Java 8
 * [Docker](https://www.docker.com/) - Tecnología de Contenedores/Containers
 * [Docker Hub](https://hub.docker.com/) - Repositorio de Docker Publico
 

@@ -5,10 +5,17 @@ services:
    gotenberg:
       image: gotenberg/gotenberg:8.17.1
       container_name: gotenberg
+      restart: always
       command:
-         # CONFIGURATION
+         # *** General ***
          - gotenberg
          - --log-level=debug # Logging levels
          - --api-timeout=10s
       ports:
          - 3000:3000
+      #volumes:
+         # *** Volume configuration ***
+         #- ./gotenberg-data:/home/gotenberg
+
+#volumes:
+#   gotenberg-data:
