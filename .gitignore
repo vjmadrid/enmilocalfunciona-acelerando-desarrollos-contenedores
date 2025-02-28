@@ -51,3 +51,5 @@ custom-postgres-11/
 
 # Docker volumens
 **/example01-n8n-data
+
+**/mysql-data

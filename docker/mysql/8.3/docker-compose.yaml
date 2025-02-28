@@ -1,0 +1,37 @@
+# Use Case: Basic Installation
+services:
+   # Project URL: https://github.com/mysql
+   # Docs URL: https://dev.mysql.com/doc/
+   custom-mysql-8.3:
+      image: mysql:8.3.0
+      container_name: custom-mysql-8.3
+      restart: always
+      networks: ['demo']
+      environment:
+         MYSQL_ROOT_PASSWORD: root
+         MYSQL_DATABASE: acme
+         MYSQL_USER: test
+         MYSQL_PASSWORD: test
+      command: --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci
+      volumes:
+         # *** MySQL configuration ***
+         #- "./example.sql:/docker-entrypoint-initdb.d/1.sql"
+         # *** Volume configuration ***
+         - ./mysql-data:/var/lib/mysql
+      ports:
+         - 3306:3306
+
+   # Project URL: https://github.com/TimWolla/docker-adminer
+   # Docs URL: https://hub.docker.com/_/adminer/
+   adminer:
+      image: adminer:4.17.1
+      restart: always
+      container_name: adminer
+      networks: ['demo']
+      ports:
+         - 8080:8080
+
+networks:
+   demo:
+      name: demo
+      driver: bridge
