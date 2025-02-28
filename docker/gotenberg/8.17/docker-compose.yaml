@@ -6,6 +6,7 @@ services:
       image: gotenberg/gotenberg:8.17.1
       container_name: gotenberg
       restart: always
+      networks: ['demo']
       command:
          # *** General ***
          - gotenberg
@@ -19,3 +20,8 @@ services:
 
 #volumes:
 #   gotenberg-data:
+
+networks:
+   demo:
+      name: demo
+      driver: bridge
