@@ -53,3 +53,4 @@ custom-postgres-11/
 **/example01-n8n-data
 
 **/mysql-data
+**/mariadb-data
