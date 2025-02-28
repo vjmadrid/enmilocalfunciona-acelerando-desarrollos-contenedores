@@ -1,3 +1,48 @@
+# smtp4dev v3
+
+Este proyecto representa una estructura de recursos utilizados para el uso de **smtp4dev** con **Docker**
+
+* **docker-compose.yaml** representa una instalación independiente, básica, y customizada (a nivel de datos) de **smtp4dev** con **Docker**
+
+
+
+
+
+## Stack Tecnológico
+
+* [Docker](https://www.docker.com/) - Tecnología de Contenedores/Containers
+* [Docker Hub](https://hub.docker.com/) - Repositorio de Docker Publico
+* [smtp4dev](https://github.com/rnwood/smtp4dev) - Fake SMTP
+
+Dependencias con Proyectos de Arquitectura
+
+N/A
+
+Dependencias con Terceros
+
+N/A
+
+
+
+
+
+## Prerrequisitos
+
+Define que elementos son necesarios para instalar el software
+
+* Docker instalado (19+)
+
+
+
+
+
+## Instalación
+
+### Docker Compose
+
+Configuración del fichero "docker-compose.yaml"
+
+```bash
 # Use Case: Basic Installation
 services:
    # Project URL: https://github.com/rnwood/smtp4dev
@@ -54,3 +99,67 @@ networks:
    demo:
       name: demo
       driver: bridge
+```
+
+Pasos a seguir
+
+
+1. Localizar el directorio principal del proyecto : <PROJECT_PATH> (/docker/smpt4dev/v3)
+
+2. Ejecutar el siguiente comando
+
+```bash
+docker compose up --build
+
+ó
+
+docker compose up --build -d
+```
+
+3. Comprobar que la imagen ha sido creada
+
+Verificar que parece como imagen Docker el nombre "smtp4dev"
+
+4. Comprobar que la aplicación ha sido desplegada correctamente
+
+Verificar mediante su interfaz web que esta disponible
+
+
+
+
+
+## Pruebas
+
+N/A
+
+
+
+
+
+## Despliegue
+
+N/A
+
+
+
+
+
+## Uso
+
+N/A
+
+
+
+
+
+## Versionado
+
+**Nota :** [SemVer](http://semver.org/) es usado para el versionado.
+
+
+
+
+
+## Autores
+
+* **Víctor Madrid**
