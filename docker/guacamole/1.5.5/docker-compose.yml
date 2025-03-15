@@ -1,0 +1,66 @@
+networks:
+  guacamole_net:
+    driver: bridge
+
+services:
+
+  # Project URL: https://github.com/postgres/postgres
+  # Docs URL: https://www.postgresql.org/docs/16/index.html
+  guacamole_database:
+    image: postgres:16
+    container_name: guacamole_database
+    restart: always
+    networks: ['guacamole_net']
+    environment:
+      # *** Settings ***
+      - PGDATA
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - POSTGRES_NON_ROOT_USER
+      - POSTGRES_NON_ROOT_PASSWORD
+    ports:
+      - 5432:5432
+    volumes:
+      # *** Database Initializer ***
+      #- ./init-data.sh:/docker-entrypoint-initdb.d/init-data.sh
+      - ./config/postgres/init:/docker-entrypoint-initdb.d:ro
+      # *** Volume configuration ***
+      - ./db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -h localhost -U ${POSTGRES_NON_ROOT_USER} -d ${POSTGRES_DB}']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  guacamole_backend:
+    image: guacamole/guacd:1.5.5
+    container_name: guacamole_backend
+    restart: always
+    networks: ['guacamole_net']
+    volumes:
+    - ./guacamole-data/drive:/drive:rw
+    - ./guacamole-data/record:/var/lib/guacamole/recordings:rw
+
+  # guacamole
+  guacamole_frontend:
+    image: guacamole/guacamole:1.5.5
+    container_name: guacamole_frontend
+    restart: always
+    networks: ['guacamole_net']
+    #networks: ['guacamole_net','haproxy_net']
+    environment:
+      GUACD_HOSTNAME: guacd
+      POSTGRESQL_DATABASE: guacamole_db
+      POSTGRESQL_HOSTNAME: postgres
+      POSTGRESQL_PASSWORD: '${POSTGRES_PASSWORD}'
+      POSTGRESQL_USER: '${POSTGRES_USER}'
+      POSTGRESQL_AUTO_CREATE_ACCOUNTS: true
+    links:
+    - guacamole_backend
+    depends_on:
+    - guacamole_database
+    - guacamole_backend
+    volumes:
+    - ./guacamole-data/drive:/drive:rw
+    - ./guacamole-data/record:/var/lib/guacamole/recordings
