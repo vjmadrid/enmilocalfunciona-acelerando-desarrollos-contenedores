@@ -1,0 +1,31 @@
+services:
+    # Project URL:
+    # - https://github.com/mock-server/mockserver
+    # Docs URL:
+    # - https://www.mock-server.com/#what-is-mockserver
+    # - https://www.mock-server.com/where/docker.html
+
+    mockserver:
+      image: mockserver/mockserver:5.15.0
+      container_name: "mockserver"
+      restart: always
+      networks: ['demo']
+      environment:
+        #MOCKSERVER_SERVER_PORT: 1234
+        #MOCKSERVER_PROPERTY_FILE: /config/mockserver.properties
+        MOCKSERVER_INITIALIZATION_JSON_PATH: /config/initializerJson.json
+        MOCKSERVER_LOG_LEVEL: DEBUG
+        MOCKSERVER_MAX_EXPECTATIONS: 100
+        MOCKSERVER_MAX_HEADER_SIZE: 8192
+      ports:
+        - 1080:1080
+      volumes:
+        - ./config:/config
+
+volumes:
+  mockserver-data:
+
+networks:
+  demo:
+    name: demo
+    driver: bridge

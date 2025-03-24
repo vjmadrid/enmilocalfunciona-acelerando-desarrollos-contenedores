@@ -1,0 +1,48 @@
+[
+    {
+        "httpRequest": {
+            "path": "/hello"
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": {"Content-Type": "application/json"},
+            "body": "{\"hello\": \"world\"}"
+        }
+    },
+    {
+        "httpRequest": {
+            "path": "/api/users",
+            "method": "GET"
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "body": {
+                "message": "Example Response for GET /api/users"
+            }
+        }
+    },
+    {
+        "httpRequest": {
+            "path": "/api/users/{userId}",
+            "method": "GET"
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "body": {
+                "message": "Response for GET /api/users/{userId}"
+            }
+        }
+    },
+    {
+        "httpRequest": {
+            "path": "/api/users",
+            "method": "POST"
+        },
+        "httpResponse": {
+            "statusCode": 201,
+            "body": {
+                "message": "Example Response for POST /api/users"
+            }
+        }
+    }
+]
