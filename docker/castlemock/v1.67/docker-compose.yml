@@ -1,0 +1,30 @@
+services:
+  castlemock:
+    image: castlemock/castlemock:v1.67
+    container_name: castlemock
+    restart: always
+    networks: ['demo']
+    ports:
+      - 8080:8080
+    environment:
+      #- SPRING_PROFILES_ACTIVE=prod
+      - SERVER_SERVLET_CONTEXT_PATH=/castlemock
+      - CASTLEMOCK_REPOSITORY_FILE_PATH=/var/castlemock
+      - SPRING_SECURITY_USER_NAME=admin
+      - SPRING_SECURITY_USER_PASSWORD=admin
+    volumes:
+      - ./castlemock-data:/var/castlemock
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/castlemock/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  demo:
+    name: demo
+    driver: bridge
+
+volumes:
+  castlemock-data:
