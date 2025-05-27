@@ -1,0 +1,21 @@
+services:
+
+  syft:
+    image: anchore/syft:v1.21.0
+    container_name: syft
+    restart: "no"
+    networks: ['demo']
+    command: >
+      syft docker:alpine -o cyclonedx-json > /output/alpine-sbom.json
+    volumes:
+      # *** General configuration ***
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Access to Docker on host machine
+      - ./syft-output:/output  # Para guardar los SBOM generados
+
+networks:
+  demo:
+
+volumes:
+  syft-output:
+    name: syft-output
+    driver: local

@@ -1,0 +1,43 @@
+services:
+  snyk-broker:
+    image: snyk/broker:4.209.3-universal-nlatest
+    container_name: snyk-broker
+    restart: unless-stopped
+    networks: ['demo']
+    environment:
+      - BROKER_TOKEN=tu_token_aquí
+      - PORT=8000
+    ports:
+      - 8000:8000
+    volumes:
+      - ./snyk-broker-data:/var/lib/snyk
+
+  portainer:
+    image: portainer/portainer-ce:2.27.3
+    container_name: portainer
+    restart: unless-stopped
+    networks: ['demo']
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TZ=Europe/Madrid
+    ports:
+      - 9000:9000
+    volumes:
+       # *** General configuration ***
+      - /var/run/docker.sock:/var/run/docker.sock:ro # Access to Docker on host machine
+      # *** Volume configuration ***
+      - ./portainer-data:/data
+
+networks:
+  demo:
+    name: demo
+    driver: bridge
+
+volumes:
+  snyk-broker-data:
+    name: snyk-broker-data
+    driver: local
+  portainer-data:
+    name: portainer-data
+    driver: local
